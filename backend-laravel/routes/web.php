@@ -13,9 +13,7 @@ use App\Http\Controllers\AuthController;
 */
 
 // Rotas Públicas
-Route::get('/', function () {
-    return view('index');
-})->name('home');
+Route::get('/', function () {return view('index');})->name('home');
 
 // Autenticação
 Route::middleware('guest')->group(function () {

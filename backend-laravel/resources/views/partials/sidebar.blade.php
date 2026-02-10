@@ -1,7 +1,7 @@
 {{-- resources/views/partials/sidebar.blade.php --}}
 <div class="sidebar">
     <div class="sidebar-header">
-        <a href="{{ route('dashboard') }}" class="logo">
+        <a href="{{ route('index') }}" class="logo">
             <div class="logo-icon">
                 <i class="fas fa-graduation-cap"></i>
             </div>
