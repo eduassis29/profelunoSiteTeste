@@ -4,17 +4,16 @@
 @section('title', 'Dashboard - Aluno')
 
 @section('content')
-<!-- Stats Cards -->
 <div class="stats-row">
     <div class="stat-card">
         <div class="stat-card-header">
             <div class="stat-icon primary">
-                <i class="fas fa-chalkboard"></i>
+                <i class="fas fa-book"></i>
             </div>
         </div>
         <div class="stat-value">
-            <h3>{{ $stats['aulasEmAndamento'] ?? 8 }}</h3>
-            <p class="stat-label">Aulas em Andamento</p>
+            <h3>{{ $totalClasses }}</h3>
+            <p class="stat-label">Total de Aulas</p>
         </div>
     </div>
 
@@ -25,105 +24,97 @@
             </div>
         </div>
         <div class="stat-value">
-            <h3>{{ $stats['simuladosConcluidos'] ?? 24 }}</h3>
-            <p class="stat-label">Simulados Concluídos</p>
-        </div>
-    </div>
-
-    <div class="stat-card">
-        <div class="stat-card-header">
-            <div class="stat-icon warning">
-                <i class="fas fa-clock"></i>
-            </div>
-        </div>
-        <div class="stat-value">
-            <h3>{{ $stats['simuladosPendentes'] ?? 5 }}</h3>
-            <p class="stat-label">Simulados Pendentes</p>
+            <h3>{{ $completedClasses }}</h3>
+            <p class="stat-label">Aulas Concluídas</p>
         </div>
     </div>
 
     <div class="stat-card">
         <div class="stat-card-header">
             <div class="stat-icon info">
-                <i class="fas fa-trophy"></i>
+                <i class="fas fa-calendar-check"></i>
             </div>
         </div>
         <div class="stat-value">
-            <h3>{{ $stats['taxaAproveitamento'] ?? 87 }}%</h3>
-            <p class="stat-label">Taxa de Aproveitamento</p>
+            <h3>{{ now()->format('d/m') }}</h3>
+            <p class="stat-label">Data de Hoje</p>
         </div>
     </div>
 </div>
 
-<!-- Quick Actions -->
 <div class="quick-actions">
-    <h2 class="section-title">Acesso Rápido</h2>
+    <h2 class="section-title">
+        <i class="fas fa-lightning-bolt"></i>
+        Ações Rápidas
+    </h2>
     <div class="action-cards">
-        <div class="action-card" onclick="window.location.href='{{ route('aluno.buscar-sala') }}'">
+        <a href="{{ route('aluno.browse') }}" class="action-card">
             <div class="action-icon">
                 <i class="fas fa-search"></i>
             </div>
-            <h3>Buscar Sala de Aula</h3>
-            <p>Encontre professores disponíveis nas matérias do seu interesse</p>
-        </div>
-
-        <div class="action-card" onclick="window.location.href='{{ route('aluno.simulados') }}'">
+            <h3>Buscar Salas</h3>
+            <p>Encontre novas aulas para participar</p>
+        </a>
+        <a href="#" class="action-card">
             <div class="action-icon">
-                <i class="fas fa-file-alt"></i>
+                <i class="fas fa-file-pdf"></i>
             </div>
-            <h3>Meus Simulados</h3>
-            <p>Veja seus simulados realizados e pendentes</p>
-        </div>
-
-        <div class="action-card" onclick="window.location.href='{{ route('aluno.conteudos') }}'">
+            <h3>Materiais</h3>
+            <p>Acesse conteúdos e materiais</p>
+        </a>
+        <a href="#" class="action-card">
             <div class="action-icon">
-                <i class="fas fa-book-open"></i>
+                <i class="fas fa-chart-bar"></i>
             </div>
-            <h3>Conteúdo das Aulas</h3>
-            <p>Acesse materiais e conteúdos das aulas anteriores</p>
-        </div>
+            <h3>Desempenho</h3>
+            <p>Verifique seu progresso</p>
+        </a>
     </div>
 </div>
 
-<!-- Recent Classes -->
 <div class="recent-classes">
-    <h2 class="section-title">Aulas Recentes</h2>
-    
-    @forelse($aulasRecentes ?? [] as $aula)
-    <div class="class-item">
-        <div class="class-info">
-            <div class="class-icon" style="background: {{ $aula['iconBg'] }}; color: {{ $aula['iconColor'] }};">
-                <i class="{{ $aula['icon'] }}"></i>
-            </div>
-            <div class="class-details">
-                <h4>{{ $aula['titulo'] }}</h4>
-                <p>{{ $aula['professor'] }} - {{ $aula['topico'] }}</p>
-            </div>
+    <h2 class="section-title">
+        <i class="fas fa-history"></i>
+        Aulas Recentes
+    </h2>
+
+    @if($classrooms->count() > 0)
+        <div class="classes-list">
+            @foreach($classrooms as $classroom)
+                <div class="class-item">
+                    <div class="class-info">
+                        <div class="class-icon">
+                            <i class="fas fa-chalkboard-user"></i>
+                        </div>
+                        <div class="class-details">
+                            <h4>{{ $classroom->title }}</h4>
+                            <p><strong>Professor:</strong> {{ $classroom->teacher->name }}</p>
+                            <p><strong>Matéria:</strong> {{ $classroom->subject ?? 'Não informado' }}</p>
+                        </div>
+                    </div>
+                    <div class="class-meta">
+                        @if($classroom->status === 'completed')
+                            <span class="class-status status-completed">
+                                <i class="fas fa-check"></i> Concluída
+                            </span>
+                        @elseif($classroom->status === 'active')
+                            <span class="class-status status-pending">
+                                <i class="fas fa-play"></i> Em andamento
+                            </span>
+                        @endif
+                    </div>
+                    <a href="{{ route('aluno.show', $classroom->id) }}" class="view-btn">
+                        <i class="fas fa-eye"></i>
+                    </a>
+                </div>
+            @endforeach
         </div>
-        <div class="class-meta">
-            <span class="class-status {{ $aula['statusClass'] }}">{{ $aula['statusLabel'] }}</span>
-            <button class="view-btn" onclick="window.location.href='{{ $aula['url'] }}'">
-                {{ $aula['actionLabel'] }}
-            </button>
+    @else
+        <div class="empty-state">
+            <i class="fas fa-inbox"></i>
+            <h3>Nenhuma aula ainda</h3>
+            <p>Você ainda não participa de nenhuma aula. <a href="{{ route('aluno.browse') }}">Buscar salas</a></p>
         </div>
-    </div>
-    @empty
-    {{-- Dados padrão caso não haja aulas --}}
-    <div class="class-item">
-        <div class="class-info">
-            <div class="class-icon" style="background: rgba(115, 103, 240, 0.15); color: var(--primary-color);">
-                <i class="fas fa-calculator"></i>
-            </div>
-            <div class="class-details">
-                <h4>Matemática Avançada</h4>
-                <p>Prof. João Silva - Trigonometria e Funções</p>
-            </div>
-        </div>
-        <div class="class-meta">
-            <span class="class-status status-completed">Concluída</span>
-            <button class="view-btn">Ver Conteúdo</button>
-        </div>
-    </div>
-    @endforelse
+    @endif
 </div>
 @endsection

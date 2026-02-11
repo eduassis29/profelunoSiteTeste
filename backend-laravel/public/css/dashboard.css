@@ -121,6 +121,10 @@ body {
     min-height: 100vh;
 }
 
+/* Cabeçalho */
+.header {
+}
+
 /* Header */
 .header {
     display: flex;
@@ -436,6 +440,7 @@ body {
 
     .main-content {
         margin-left: 0;
+        }
         padding: 15px;
     }
 

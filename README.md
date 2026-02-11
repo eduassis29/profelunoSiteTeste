@@ -125,7 +125,7 @@ git push origin feature/dotnet-nome
 
 ## 🔄 Banco de Dados
 
-- **DBMS**: PostgreSQL 16
+- **DBMS**: PostgreSQL 13
 - **Host**: postgres (dentro do Docker)
 - **User**: postgres
 - **Password**: postgres

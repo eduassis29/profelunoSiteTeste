@@ -1,44 +1,38 @@
-{{-- resources/views/layouts/app.blade.php --}}
-<!DOCTYPE html>
-<html lang="pt-BR" class="loading" data-textdirection="ltr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    
-    <title>@yield('title', 'Dashboard') | Sistema de Aulas Virtuais</title>
-    
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="{{ asset('css/dashboard.css') }}">
-    @stack('styles')
-</head>
-<body>
-    <!-- Sidebar -->
-    @include('partials.sidebar')
+@extends('layouts.app')
 
-    <!-- Main Content -->
-    <div class="main-content">
-        <!-- Header -->
-        @include('partials.header')
+@section('title', 'ProfeLuno - Sistema de Aulas Virtuais')
 
-        <!-- Page Content -->
-        @yield('content')
+@section('content')
+<div class="welcome-container" style="text-align: center; padding: 100px 20px;">
+    <div class="welcome-card">
+        <div class="welcome-icon" style="font-size: 60px; margin-bottom: 20px;">
+            <i class="fas fa-graduation-cap" style="color: var(--primary-color);"></i>
+        </div>
+        <h1 style="font-size: 32px; margin-bottom: 10px;">Bem-vindo ao ProfeLuno</h1>
+        <p style="color: var(--text-secondary); margin-bottom: 30px;">
+            Sistema de Aulas Virtuais para Professores e Alunos
+        </p>
+        
+        @if (!Auth::check())
+            <div style="display: flex; gap: 15px; justify-content: center;">
+                <a href="{{ route('login') }}" class="btn-primary" style="padding: 12px 30px;">
+                    <i class="fas fa-sign-in-alt"></i> Fazer Login
+                </a>
+                <a href="{{ route('register') }}" style="background: var(--card-bg); color: var(--text-primary); border: 1px solid var(--border-color); padding: 12px 30px; border-radius: 10px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 8px;">
+                    <i class="fas fa-user-plus"></i> Registrar-se
+                </a>
+            </div>
+        @else
+            <p>Você está conectado como <strong>{{ Auth::user()->name }}</strong></p>
+            <p style="color: var(--text-secondary); margin-top: 20px;">
+                Redirecionando para o dashboard...
+            </p>
+            <script>
+                setTimeout(function() {
+                    window.location.href = "{{ Auth::user()->role->name === 'professor' ? route('professor.dashboard') : route('aluno.dashboard') }}";
+                }, 2000);
+            </script>
+        @endif
     </div>
-
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <!-- Custom JS -->
-    <script src="{{ asset('js/dashboard.js') }}"></script>
-    @stack('scripts')
-</body>
-</html>
+</div>
+@endsection

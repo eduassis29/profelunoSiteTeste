@@ -18,27 +18,35 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ asset('css/variables.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/global.css') }}">
     <link rel="stylesheet" href="{{ asset('css/dashboard.css') }}">
+    @yield('styles')
     @stack('styles')
 </head>
 <body>
-    <!-- Sidebar -->
-    @include('partials.sidebar')
-
-    <!-- Main Content -->
-    <div class="main-content">
-        <!-- Header -->
-        @include('partials.header')
-
-        <!-- Page Content -->
+    @guest
         @yield('content')
-    </div>
+    @else
+        <!-- Sidebar -->
+        @include('partials.sidebar')
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Header -->
+            @include('partials.header')
+
+            <!-- Page Content -->
+            @yield('content')
+        </div>
+    @endguest
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
     <!-- Custom JS -->
-    <script src="{{ asset('js/dashboard.js') }}"></script>
+    <script src="{{ asset('js/app.js') }}"></script>
+    @yield('scripts')
     @stack('scripts')
 </body>
 </html>
