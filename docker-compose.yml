@@ -56,7 +56,7 @@ services:
       - profeluno_network
 
   postgres:
-    image: postgres:16-alpine
+    image: postgres:13
     container_name: profeluno_postgres
     environment:
       - POSTGRES_DB=profeluno

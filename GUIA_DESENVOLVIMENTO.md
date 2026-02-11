@@ -25,7 +25,7 @@ profeluno/
 cd /var/www/html/profeluno
 ```
 
-#### PASSO 2: Subir os containers (VOCÊ JÁ FEZ)
+#### PASSO 2: Subir os containers
 ```bash
 docker-compose up -d
 ```

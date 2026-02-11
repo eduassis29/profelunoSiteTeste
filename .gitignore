@@ -9,6 +9,7 @@ backend-laravel/bootstrap/cache/*
 backend-laravel/public/hot
 backend-laravel/public/storage
 backend-laravel/.DS_Store
+backend-laravel/prototipos
 
 # .NET / C#
 backend-dotnet/bin/

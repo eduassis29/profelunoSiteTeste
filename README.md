@@ -35,7 +35,7 @@ ProfeLuno
 
 ```bash
 # 1. Clonar repositório
-git clone git@bitbucket.org:seu_usuario/profeluno.git
+git clone git@github.com:seu_usuario/profeluno.git
 cd profeluno
 
 # 2. Subir containers
@@ -58,7 +58,7 @@ exit
 
 - **[GUIA_DESENVOLVIMENTO.md](GUIA_DESENVOLVIMENTO.md)** - Passo a passo em 3 partes:
   1. Iniciar Laravel
-  2. Configurar Bitbucket
+  2. Configurar github
   3. Integrar Laravel + C#
 
 - **[INTEGRACAO_LARAVEL_DOTNET.md](INTEGRACAO_LARAVEL_DOTNET.md)** - Exemplos de código de integração
