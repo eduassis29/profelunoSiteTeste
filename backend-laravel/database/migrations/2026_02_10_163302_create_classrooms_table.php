@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->text('description')->nullable();
-            $table->foreignId('teacher_id')->constrained('users')->onDelete('cascade');
             $table->string('subject')->nullable();
             $table->string('level')->nullable();
             $table->enum('status', ['pending', 'active', 'completed', 'archived'])->default('pending');
