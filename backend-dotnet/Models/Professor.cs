@@ -15,15 +15,7 @@ public partial class Professor
 
     public DateTime? UpdatedAt { get; set; }
 
-    public long? CreatedBy { get; set; }
-
-    public long? UpdatedBy { get; set; }
-
-    public virtual User? CreatedByNavigation { get; set; }
-
     public virtual ICollection<SalaAula> SalaAulas { get; set; } = new List<SalaAula>();
-
-    public virtual User? UpdatedByNavigation { get; set; }
 
     public virtual User? User { get; set; }
 }

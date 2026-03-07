@@ -15,15 +15,7 @@ public partial class Aluno
 
     public DateTime? UpdatedAt { get; set; }
 
-    public long? CreatedBy { get; set; }
-
-    public long? UpdatedBy { get; set; }
-
     public virtual ICollection<AlunoSala> AlunoSalas { get; set; } = new List<AlunoSala>();
-
-    public virtual User? CreatedByNavigation { get; set; }
-
-    public virtual User? UpdatedByNavigation { get; set; }
 
     public virtual User? User { get; set; }
 }
