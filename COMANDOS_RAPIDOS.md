@@ -205,7 +205,7 @@ docker-compose up -d
 
 | Variável | Valor |
 |----------|-------|
-| `DB_HOST` | postgres |
+| `DB_HOST` | localhost |
 | `DB_PORT` | 5432 |
 | `DB_USER` | postgres |
 | `DB_PASS` | postgres |
