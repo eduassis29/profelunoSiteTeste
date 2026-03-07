@@ -25,8 +25,6 @@ return new class extends Migration
             $table->string('nome_aluno');
             $table->timestamp('created_at')->nullable();
             $table->timestamp('updated_at')->nullable();
-            $table->foreignId('created_by')->nullable()->constrained('users')->onDelete('set null');
-            $table->foreignId('updated_by')->nullable()->constrained('users')->onDelete('set null');
         });
 
         Schema::create('professor', function (Blueprint $table) {
@@ -35,8 +33,6 @@ return new class extends Migration
             $table->string('nome_professor');
             $table->timestamp('created_at')->nullable();
             $table->timestamp('updated_at')->nullable();
-            $table->foreignId('created_by')->nullable()->constrained('users')->onDelete('set null');
-            $table->foreignId('updated_by')->nullable()->constrained('users')->onDelete('set null');
         });
 
         Schema::create('admin', function (Blueprint $table) {
@@ -45,8 +41,6 @@ return new class extends Migration
             $table->string('nome_admin');
             $table->timestamp('created_at')->nullable();
             $table->timestamp('updated_at')->nullable();
-            $table->foreignId('created_by')->nullable()->constrained('users')->onDelete('set null');
-            $table->foreignId('updated_by')->nullable()->constrained('users')->onDelete('set null');
         });
     }
 

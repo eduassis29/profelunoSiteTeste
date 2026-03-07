@@ -351,12 +351,12 @@ cd sistema-aulas-virtuais
 APP_NAME="Sistema de Aulas Virtuais"
 APP_URL=http://localhost:8000
 
-DB_CONNECTION=mysql
-DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_DATABASE=aulas_virtuais
-DB_USERNAME=root
-DB_PASSWORD=
+DB_CONNECTION=pgsql
+DB_HOST=localhost
+DB_PORT=5432
+DB_DATABASE=profeluno
+DB_USERNAME=postgres
+DB_PASSWORD=postgres
 ```
 
 ### 3. **Instalar dependências**
