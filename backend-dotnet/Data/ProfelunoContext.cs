@@ -51,14 +51,14 @@ public partial class ProfelunoContext : DbContext
             entity.Property(e => e.CreatedAt)
                 .HasColumnType("timestamp(0) without time zone")
                 .HasColumnName("created_at");
-            entity.Property(e => e.CreatedBy).HasColumnName("created_by");
+            
             entity.Property(e => e.NomeAdmin)
                 .HasMaxLength(255)
                 .HasColumnName("nome_admin");
             entity.Property(e => e.UpdatedAt)
                 .HasColumnType("timestamp(0) without time zone")
                 .HasColumnName("updated_at");
-            entity.Property(e => e.UpdatedBy).HasColumnName("updated_by");
+            
             entity.Property(e => e.UserId).HasColumnName("user_id");
 
             entity.HasOne(d => d.User).WithMany(p => p.AdminUsers)
@@ -76,14 +76,14 @@ public partial class ProfelunoContext : DbContext
             entity.Property(e => e.CreatedAt)
                 .HasColumnType("timestamp(0) without time zone")
                 .HasColumnName("created_at");
-            entity.Property(e => e.CreatedBy).HasColumnName("created_by");
+            
             entity.Property(e => e.NomeAluno)
                 .HasMaxLength(255)
                 .HasColumnName("nome_aluno");
             entity.Property(e => e.UpdatedAt)
                 .HasColumnType("timestamp(0) without time zone")
                 .HasColumnName("updated_at");
-            entity.Property(e => e.UpdatedBy).HasColumnName("updated_by");
+            
             entity.Property(e => e.UserId).HasColumnName("user_id");
 
             entity.HasOne(d => d.User).WithMany(p => p.AlunoUsers)
@@ -177,14 +177,14 @@ public partial class ProfelunoContext : DbContext
             entity.Property(e => e.CreatedAt)
                 .HasColumnType("timestamp(0) without time zone")
                 .HasColumnName("created_at");
-            entity.Property(e => e.CreatedBy).HasColumnName("created_by");
+            
             entity.Property(e => e.NomeProfessor)
                 .HasMaxLength(255)
                 .HasColumnName("nome_professor");
             entity.Property(e => e.UpdatedAt)
                 .HasColumnType("timestamp(0) without time zone")
                 .HasColumnName("updated_at");
-            entity.Property(e => e.UpdatedBy).HasColumnName("updated_by");
+            
             entity.Property(e => e.UserId).HasColumnName("user_id");
 
             entity.HasOne(d => d.User).WithMany(p => p.ProfessorUsers)
