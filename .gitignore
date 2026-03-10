@@ -17,6 +17,7 @@ backend-dotnet/obj/
 backend-dotnet/.vs/
 backend-dotnet/appsettings.local.json
 backend-dotnet/appsettings.*.local.json
+backend-dotnet/appsettings.json
 backend-dotnet/.vscode/
 backend-dotnet/*.user
 backend-dotnet/*.suo
