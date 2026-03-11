@@ -65,7 +65,6 @@ namespace backend_dotnet.Services
 
             User user = new User
             {
-                Id = 3,
                 Nome_Usuario = cadastro.Nome,
                 Email = cadastro.Email,
                 IdCargo = cadastro.IdCargo,
