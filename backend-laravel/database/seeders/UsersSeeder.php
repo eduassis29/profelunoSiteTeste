@@ -20,7 +20,7 @@ class UsersSeeder extends Seeder
             'nome_usuario' => 'Eduardo',
             'email' => 'eduassis29@gmail.com',
             'password' => md5('Capim12'),
-            'cargo' => 'admin',
+            'cargo_id' => 3, // Admin
             'created_at' => now(),
             'updated_at' => now(),
         ]);
@@ -30,7 +30,7 @@ class UsersSeeder extends Seeder
             'nome_usuario' => 'Yann',
             'email' => 'yannmunizbarbosa@gmail.com',
             'password' => md5('26112004'),
-            'cargo' => 'admin',
+            'cargo_id' => 3, // Admin
             'created_at' => now(),
             'updated_at' => now(),
         ]);

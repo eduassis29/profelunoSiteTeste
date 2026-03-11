@@ -16,7 +16,7 @@ class DotNetService
 
     public function __construct()
     {
-        $this->baseUrl = env('DOTNET_API_URL', 'http://dotnet:5000/api');
+        $this->baseUrl = env('DOTNET_API_URL', 'http://dotnet:2912/api');
         $this->timeout = env('DOTNET_API_TIMEOUT', 30);
     }
 

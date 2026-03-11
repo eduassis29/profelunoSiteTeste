@@ -8,9 +8,9 @@ use App\Http\Controllers\ClassroomController;
 use App\Http\Controllers\UserController;
 
 // Rota de início - redireciona para login
-Route::get('/', function () {
-    return Auth::check() ? redirect(Auth::user()->role->name === 'professor' ? '/professor/dashboard' : '/aluno/dashboard') : redirect('/login');
-})->name('home');
+// Route::get('/', function () {
+//     return Auth::check() ? redirect(Auth::user()->role->name === 'professor' ? '/professor/dashboard' : '/aluno/dashboard') : redirect('/login');
+// })->name('home');
 
 // Autenticação - Rotas públicas
 Route::middleware('guest')->group(function () {
@@ -39,4 +39,9 @@ Route::middleware(['auth'])->prefix('aluno')->name('aluno.')->group(function () 
 Route::middleware(['auth'])->prefix('professor')->name('professor.')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'teacherDashboard'])->name('dashboard');
     Route::get('/salas', [ClassroomController::class, 'teacherClassrooms'])->name('classrooms');
+});
+
+// Rotas Protegidas - Admin
+Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/dashboard', [DashboardController::class, 'adminDashboard'])->name('dashboard');
 });

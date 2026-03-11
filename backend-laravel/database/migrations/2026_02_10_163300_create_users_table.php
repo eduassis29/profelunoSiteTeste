@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('nome_usuario');
             $table->string('email')->unique();
             $table->string('password');
-            $table->enum('cargo', ['aluno', 'professor', 'admin']);
+            $table->foreignId('cargo_id')->nullable()->constrained('cargos');
             $table->timestamps();
         });
     }

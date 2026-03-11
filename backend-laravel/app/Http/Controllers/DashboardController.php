@@ -7,5 +7,26 @@ use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {
-    //
+    public function studentDashboard()
+    {
+        $totalClasses = 0;
+        $completedClasses = 0;
+        $classrooms = collect([]);
+
+        return view('aluno.dashboard', compact('totalClasses', 'completedClasses', 'classrooms'));
+    }
+
+    public function teacherDashboard()
+    {
+        $totalClasses = 0;
+        $activeClasses = 0;
+        $classrooms = collect([]);
+
+        return view('professor.dashboard', compact('totalClasses', 'activeClasses', 'classrooms'));
+    }
+
+    public function adminDashboard()
+    {
+        return view('admin.dashboard');
+    }
 }
