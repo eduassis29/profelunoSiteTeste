@@ -101,9 +101,9 @@
             </a>
         </div>
         <div class="menu-item">
-            <form method="POST" action="{{ route('logout') }}" style="margin: 0;">
+            <form id="logout-form" method="POST" action="{{ route('logout') }}" style="margin: 0;">
                 @csrf
-                <button type="submit" class="menu-link" style="width: 100%; border: none; background: none; padding: 12px 15px; text-align: left; cursor: pointer;">
+                <button type="button" onclick="openLogoutModal()" class="menu-link" style="width: 100%; border: none; background: none; padding: 12px 15px; text-align: left; cursor: pointer;">
                     <i class="fas fa-sign-out-alt"></i>
                     <span>Sair</span>
                 </button>
@@ -111,3 +111,53 @@
         </div>
     </nav>
 </div>
+
+<div id="logout-modal" class="logout-modal-overlay" onclick="closeLogoutModal(event)">
+    <div class="logout-modal-box">
+        <div class="logout-modal-icon">
+            <i class="fas fa-sign-out-alt"></i>
+        </div>
+        <h3 class="logout-modal-title">Tem certeza que deseja sair?</h3>
+        <br>
+        {{-- <p class="logout-modal-text"> Você precisará fazer login novamente para acessar o sistema.</p> --}}
+        <div class="logout-modal-actions">
+            <button type="button" class="logout-btn-cancel" onclick="closeLogoutModal()">
+                Cancelar
+            </button>
+            <button type="button" class="logout-btn-confirm" onclick="confirmLogout()">
+                <i class="fas fa-sign-out-alt"></i>
+                Sair
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openLogoutModal() {
+        const modal = document.getElementById('logout-modal');
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeLogoutModal(event) {
+        if (event && event.target !== document.getElementById('logout-modal')) return;
+        const modal = document.getElementById('logout-modal');
+        modal.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    function confirmLogout() {
+        document.getElementById('logout-form').submit();
+    }
+
+    // Fecha com a tecla ESC
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            const modal = document.getElementById('logout-modal');
+            if (modal.classList.contains('active')) {
+                modal.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+        }
+    });
+</script>
