@@ -38,17 +38,17 @@ Route::match(['get', 'post'], '/logout', [AuthController::class, 'logout'])
 
 // Rotas Protegidas - Aluno
 Route::middleware(['auth', 'role:aluno'])->prefix('aluno')->name('aluno.')->group(function () {
-    Route::get('/dashboard', [DashboardController::class, 'studentDashboard'])->name('dashboard');
-    Route::get('/buscar-sala', [ClassroomController::class, 'studentBrowse'])->name('buscar-sala');
-    Route::get('/minhas-aulas', [ClassroomController::class, 'studentBrowse'])->name('minhas-aulas');
-    Route::get('/historico', [ClassroomController::class, 'studentBrowse'])->name('historico');
+    Route::get('/dashboard', [DashboardController::class, 'DashboardAluno'])->name('dashboard');
+    Route::get('/buscar-sala', [ClassroomController::class, 'BuscarSalaAluno'])->name('buscar-sala');
+    Route::get('/historico-aulas', [ClassroomController::class, 'HistoricoAulasAluno'])->name('minhas-aulas');
+    Route::get('simulados', [ClassroomController::class, 'SimuladosAluno'])->name('simulados');
     Route::get('/sala/{id}', [ClassroomController::class, 'showClassroom'])->name('show');
     Route::post('/sala/{id}/entrar', [ClassroomController::class, 'join'])->name('join');
 });
 
 // Rotas Protegidas - Professor
 Route::middleware(['auth', 'role:professor'])->prefix('professor')->name('professor.')->group(function () {
-    Route::get('/dashboard', [DashboardController::class, 'teacherDashboard'])->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'DashboardProfessor'])->name('dashboard');
     Route::get('/salas', [ClassroomController::class, 'teacherClassrooms'])->name('sala-aula');
     Route::get('/salas/create', [ClassroomController::class, 'teacherClassrooms'])->name('sala-aula.create');
     Route::get('/conteudos', [ClassroomController::class, 'teacherContents'])->name('conteudos');
@@ -58,6 +58,6 @@ Route::middleware(['auth', 'role:professor'])->prefix('professor')->name('profes
 
 // Rotas Protegidas - Admin
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
-    Route::get('/dashboard', [DashboardController::class, 'adminDashboard'])->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'DashboardAdmin'])->name('dashboard');
     Route::get('/usuarios', [UserController::class, 'usuarios'])->name('usuarios');
 });

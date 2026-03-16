@@ -10,27 +10,27 @@
         Aula em Andamento
     </h2>
 
-    @php
+    {{-- @php
         $activeClass = $classrooms->where('status', 'active')->first();
-    @endphp
+    @endphp --}}
 
-    @if($activeClass)
+    {{-- @if($activeClass) --}}
         <div class="current-class-card">
             <div class="current-class-header">
                 <div class="current-class-info">
-                    <h2>{{ $activeClass->title }}</h2>
+                    <h2>{{-- $activeClass->title }}</h2>
                     <div class="current-class-meta">
                         <div class="meta-item">
                             <i class="fas fa-book"></i>
-                            {{ $activeClass->subject }}
+                            {{-- $activeClass->subject --}}
                         </div>
                         <div class="meta-item">
                             <i class="fas fa-users"></i>
-                            {{ $activeClass->students()->count() }} alunos
+                            {{-- $activeClass->students()->count() --}} alunos
                         </div>
                         <div class="meta-item">
                             <i class="fas fa-clock"></i>
-                            {{ $activeClass->start_time?->format('H:i') ?? 'Sem horário' }}
+                            {{-- $activeClass->start_time?->format('H:i') ?? 'Sem horário' }}
                         </div>
                     </div>
                 </div>
@@ -42,11 +42,11 @@
 
             <div class="current-class-stats">
                 <div class="stat-box">
-                    <h4>{{ $activeClass->students()->count() }}</h4>
+                    <h4>{{-- $activeClass->students()->count() --}}</h4>
                     <p>Participantes</p>
                 </div>
                 <div class="stat-box">
-                    <h4>{{ $activeClass->materials()->count() }}</h4>
+                    <h4>{{-- $activeClass->materials()->count() --}}</h4>
                     <p>Materiais</p>
                 </div>
                 <div class="stat-box">
@@ -56,7 +56,7 @@
             </div>
 
             <div class="current-class-actions">
-                <a href="{{ route('aluno.show', $activeClass->id) }}" class="action-btn primary">
+                <a href="{{-- route('aluno.show', $activeClass->id) }}" class="action-btn primary">
                     <i class="fas fa-video"></i>
                     Acessar Aula
                 </a>
@@ -66,12 +66,12 @@
                 </button>
             </div>
         </div>
-    @else
+    {{-- @else --}}
         <div class="empty-state">
             <i class="fas fa-inbox"></i>
             <h3>Nenhuma aula em andamento</h3>
         </div>
-    @endif
+    {{-- @endif --}}
 </div>
 
 <div class="past-classes-section">
@@ -95,21 +95,22 @@
     </div>
 
     <div class="classes-grid">
-        @forelse($classrooms as $classroom)
+        {{-- @forelse($classrooms as $classroom) --}}
             <div class="class-card">
                 <div class="class-card-header">
                     <div class="class-card-title">
-                        <h3>{{ $classroom->title }}</h3>
-                        <p class="class-card-date">{{ $classroom->created_at->format('d/m/Y') }}</p>
+                        <h3>{{-- $classroom->title --}}</h3>
+                        <p class="class-card-date">{{-- $classroom->created_at->format('d/m/Y') --}}</p>
                     </div>
-                    <span class="class-status {{ $classroom->status }}">
-                        @if($classroom->status === 'active')
+                    <span class="class-status {{-- $classroom->status --}}">
+                        {{-- @if($classroom->status === 'active') --}}
+                             <i class="fas fa-play"></i> Ativa
                             <i class="fas fa-play"></i> Ativa
-                        @elseif($classroom->status === 'completed')
+                        {{-- @elseif($classroom->status === 'completed') --}}
                             <i class="fas fa-check"></i> Concluída
-                        @else
+                        {{-- @else --}}
                             <i class="fas fa-archive"></i> Arquivada
-                        @endif
+                        {{-- @endif --}}
                     </span>
                 </div>
 
@@ -124,17 +125,17 @@
                     </div>
                     <div class="info-row">
                         <i class="fas fa-align-left"></i>
-                        <span>{{ Str::limit($classroom->description, 50) }}</span>
+                        <span>{{-- Str::limit($classroom->description, 50) --}}</span>
                     </div>
                 </div>
 
                 <div class="class-card-footer">
                     <div class="students-count">
                         <i class="fas fa-users"></i>
-                        <span>{{ $classroom->students()->count() }} / {{ $classroom->max_students }} alunos</span>
+                        <span>{{-- $classroom->students()->count() --}} / {{-- $classroom->max_students --}} alunos</span>
                     </div>
                     <div class="card-actions">
-                        <a href="{{ route('aluno.show', $classroom->id) }}" class="icon-btn" title="Acessar">
+                        <a href="{{-- route('aluno.show', $classroom->id) --}}" class="icon-btn" title="Acessar">
                             <i class="fas fa-eye"></i>
                         </a>
                         <button class="icon-btn" title="Editar">
@@ -146,18 +147,18 @@
                     </div>
                 </div>
             </div>
-        @empty
+         {{-- @empty --}}
             <div class="empty-state">
                 <i class="fas fa-inbox"></i>
                 <h3>Nenhuma sala criada</h3>
                 <p>Crie sua primeira sala para começar</p>
             </div>
-        @endforelse
+        {{-- @endforelse --}}
     </div>
 
     <!-- Pagination -->
     <div style="margin-top: 30px;">
-        {{ $classrooms->links() }}
+        {{-- $classrooms->links() --}}
     </div>
 </div>
 @endsection

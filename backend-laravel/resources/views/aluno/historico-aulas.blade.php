@@ -10,7 +10,7 @@
         Buscar Salas de Aula
     </h2>
 
-    <form class="search-form" method="GET" action="{{ route('aluno.browse') }}">
+    <form class="search-form" method="GET" action="{{-- route('aluno.browse') --}}">
         <div class="search-input-group">
             <input 
                 type="text" 
@@ -53,7 +53,7 @@
         Salas Disponíveis
     </h2>
     <div style="display: flex; gap: 10px; align-items: center;">
-        <span class="results-count">{{ $classrooms->total() }} sala(s) encontrada(s)</span>
+        <span class="results-count">{{-- $classrooms->total() --}} sala(s) encontrada(s)</span>
         <select class="sort-select">
             <option value="recent">Mais Recentes</option>
             <option value="popular">Mais Populares</option>
@@ -63,7 +63,7 @@
 </div>
 
 <div class="teachers-grid">
-    @forelse($classrooms as $classroom)
+    {{-- @forelse($classrooms as $classroom) --}}
         <div class="teacher-card">
             <div class="teacher-header">
                 <div class="teacher-avatar">
@@ -72,7 +72,7 @@
             </div>
 
             <div class="teacher-info">
-                <h3>{{ $classroom->title }}</h3>
+                <h3>{{-- $classroom->title --}}</h3>
                 <p class="teacher-subject">{{ $classroom->subject ?? 'Sem matéria definida' }}</p>
                 <div class="teacher-rating">
                     <i class="fas fa-star"></i>
@@ -87,23 +87,23 @@
             <div class="teacher-details">
                 <div class="detail-row">
                     <i class="fas fa-user"></i>
-                    <span>Prof. {{ $classroom->teacher->name }}</span>
+                    <span>Prof. {{-- $classroom->teacher->name --}}</span>
                 </div>
                 <div class="detail-row">
                     <i class="fas fa-users"></i>
-                    <span>{{ $classroom->students()->count() }} / {{ $classroom->max_students }} alunos</span>
+                    <span>{{-- $classroom->students()->count() }} / {{ $classroom->max_students --}} alunos</span>
                 </div>
                 <div class="detail-row">
                     <i class="fas fa-calendar"></i>
-                    <span>{{ $classroom->level ?? 'Sem nível' }}</span>
+                    <span>{{-- $classroom->level ?? 'Sem nível' --}}</span>
                 </div>
             </div>
 
             <div class="teacher-tags">
-                <span class="tag">{{ $classroom->subject }}</span>
-                @if($classroom->status === 'active')
+                <span class="tag">{{-- $classroom->subject --}}</span>
+                {{-- @if($classroom->status === 'active') --}}
                     <span class="tag" style="background: rgba(40, 199, 111, 0.2); color: var(--success-color);">Ativa</span>
-                @endif
+                {{-- @endif --}}
             </div>
 
             <div class="teacher-footer">
@@ -111,7 +111,7 @@
             </div>
 
             <div style="display: flex; gap: 10px;">
-                <a href="{{ route('aluno.join', $classroom->id) }}" method="POST" class="btn-primary" style="flex: 1; text-align: center;">
+                <a href="{{-- route('aluno.join', $classroom->id) --}}" method="POST" class="btn-primary" style="flex: 1; text-align: center;">
                     <i class="fas fa-plus"></i>
                     Entrar na Sala
                 </a>
@@ -120,18 +120,17 @@
                 </button>
             </div>
         </div>
-    @empty
+    {{-- @empty --}}
         <div class="empty-state">
             <i class="fas fa-search"></i>
             <h3>Nenhuma sala encontrada</h3>
             <p>Tente ajustar seus critérios de busca</p>
         </div>
-    @endforelse
+    {{-- @endforelse --}}
 </div>
 
 <!-- Pagination -->
 <div style="margin-top: 30px;">
-    {{ $classrooms->links() }}
 </div>
 @endsection
 

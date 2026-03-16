@@ -72,9 +72,9 @@
                 </a>
             </div>
             <div class="menu-item">
-                <a href="{{ route('aluno.historico') }}" class="menu-link {{ request()->routeIs('aluno.historico') ? 'active' : '' }}">
+                <a href="{{ route('aluno.simulados') }}" class="menu-link {{ request()->routeIs('aluno.simulados') ? 'active' : '' }}">
                     <i class="fas fa-history"></i>
-                    <span>Histórico</span>
+                    <span>Simulados</span>
                 </a>
             </div>
         @elseif (session('cargo_id') === 3)

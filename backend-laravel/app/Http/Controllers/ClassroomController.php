@@ -7,11 +7,18 @@ use Illuminate\Support\Facades\Auth;
 
 class ClassroomController extends Controller
 {
-    public function studentBrowse(Request $request)
+    public function BuscarSalaAluno(Request $request)
     {
         $professores = collect([]);
 
         return view('aluno.buscar-sala', compact('professores'));
+    }
+
+    public function HistoricoAulasAluno(Request $request)
+    {
+        $professores = collect([]);
+
+        return view('aluno.historico-aulas', compact('professores'));
     }
 
     public function showClassroom($id)

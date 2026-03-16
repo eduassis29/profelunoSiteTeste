@@ -197,11 +197,11 @@
     @endforelse
 </div>
 
-@if(isset($professores) && $professores->hasPages())
+{{-- @if(isset($professores) && $professores->hasPages()) --}}
 <div class="pagination-wrapper">
-    {{ $professores->links() }}
+    {{-- $professores->links() --}}
 </div>
-@endif
+{{-- @endif --}}
 @endsection
 
 @push('scripts')

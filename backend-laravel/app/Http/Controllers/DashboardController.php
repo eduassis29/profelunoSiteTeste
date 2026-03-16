@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {
-    public function studentDashboard()
+    public function DashboardAluno()
     {
         $totalClasses = 0;
         $completedClasses = 0;
@@ -16,7 +16,7 @@ class DashboardController extends Controller
         return view('aluno.dashboard', compact('totalClasses', 'completedClasses', 'classrooms'));
     }
 
-    public function teacherDashboard()
+    public function DashboardProfessor()
     {
         $totalClasses = 0;
         $activeClasses = 0;
@@ -25,7 +25,7 @@ class DashboardController extends Controller
         return view('professor.dashboard', compact('totalClasses', 'activeClasses', 'classrooms'));
     }
 
-    public function adminDashboard()
+    public function DashboardAdmin()
     {
         return view('admin.dashboard');
     }
