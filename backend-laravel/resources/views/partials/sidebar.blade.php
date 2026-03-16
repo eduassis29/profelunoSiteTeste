@@ -94,12 +94,12 @@
 
         <hr style="border-color: var(--border-color); margin: 20px 15px;">
 
-        <div class="menu-item">
+        {{-- <div class="menu-item">
             <a href="{{ route('configuracoes') }}" class="menu-link">
                 <i class="fas fa-cog"></i>
                 <span>Configurações</span>
             </a>
-        </div>
+        </div> --}}
         <div class="menu-item">
             <form id="logout-form" method="POST" action="{{ route('logout') }}" style="margin: 0;">
                 @csrf
