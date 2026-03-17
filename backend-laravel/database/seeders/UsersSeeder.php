@@ -39,7 +39,7 @@ class UsersSeeder extends Seeder
             'id' => 3,
             'nome_usuario' => 'Admin',
             'email' => 'admin@admin.com',
-            'password' => md5('Capim12'),
+            'password' => md5('admin123'),
             'cargo_id' => 3, // Admin
             'created_at' => now(),
             'updated_at' => now(),

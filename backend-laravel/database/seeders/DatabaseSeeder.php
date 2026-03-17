@@ -18,7 +18,8 @@ class DatabaseSeeder extends Seeder
         $this->call([
             CargoSeeder::class,
             UsersSeeder::class,
-            SalaAulaSeeder::class,
+            MateriasSeeder::class,
+            // SalaAulaSeeder::class,
         ]);
     }
 }
