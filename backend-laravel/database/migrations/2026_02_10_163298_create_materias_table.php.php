@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('materias', function (Blueprint $table) {
             $table->id();
             $table->string('nome_materia')->unique();
+            $table->integer('situacao_materia')->default(1); // 1 para ativa, 0 para inativa
             $table->timestamps();
         });
     }

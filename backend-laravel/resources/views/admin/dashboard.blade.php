@@ -18,6 +18,7 @@
                     <p class="stat-label">Usuários cadastrados</p>
                 </div>
             </div>
+            <br>
             <div class="stat-card">
                 <div class="stat-card-header">
                     <div class="stat-icon success">

@@ -11,6 +11,13 @@ use App\Models\Cargo;
 
 class AuthController extends Controller
 {
+    private string $baseUrl;
+
+    public function __construct()
+    {
+        $this->baseUrl = env('DOTNET_API_URL', 'http://profeluno_dotnet:9000');
+    }
+
     public function autenticar(Request $request)
     {
         $request->validate([
@@ -18,8 +25,7 @@ class AuthController extends Controller
             'password' => 'required|string',
         ]);
 
-        $dotnetBaseUrl = env('DOTNET_API_URL', 'http://profeluno_dotnet:9000');
-        $url = "{$dotnetBaseUrl}/v1/User/Login";
+        $url = "{$this->baseUrl}/v1/User/Login";
 
         try {
             $response = Http::post($url, [

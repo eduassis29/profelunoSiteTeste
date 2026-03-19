@@ -6,8 +6,9 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ClassroomController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\MateriaController;
 
-// Rota de início - redireciona para login (evita erro de rota [home] não definida nos views)
+// ─── Raiz ────────────────────────────────────────────────────────────────────
 Route::get('/', function () {
     if (!Auth::check()) {
         return redirect('/login');
@@ -20,44 +21,48 @@ Route::get('/', function () {
     };
 })->name('home');
 
-// Autenticação - Rotas públicas
+// ─── Autenticação (públicas) ──────────────────────────────────────────────────
 Route::middleware('guest')->group(function () {
-    Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
-    Route::post('/login', [AuthController::class, 'autenticar'])->name('autenticar');
-    Route::get('/registro', [AuthController::class, 'showRegister'])->name('register');
+    Route::get('/login',     [AuthController::class, 'showLogin'])->name('login');
+    Route::post('/login',    [AuthController::class, 'autenticar'])->name('autenticar');
+    Route::get('/registro',  [AuthController::class, 'showRegister'])->name('register');
     Route::post('/registro', [AuthController::class, 'registrar'])->name('registrar');
-
-    // Rota de teste/integração com a API .NET para validar usuário (email + senha)
-    Route::post('/dotnet/verify-user', [AuthController::class, 'verifyUser']);
 });
 
-// Logout deve ser feito via POST para maior segurança, mas aceitamos GET para simplificar cliques em link.
 Route::match(['get', 'post'], '/logout', [AuthController::class, 'logout'])
     ->middleware('auth')
     ->name('logout');
 
-// Rotas Protegidas - Aluno
+// ─── Aluno ────────────────────────────────────────────────────────────────────
 Route::middleware(['auth', 'role:aluno'])->prefix('aluno')->name('aluno.')->group(function () {
-    Route::get('/dashboard', [DashboardController::class, 'DashboardAluno'])->name('dashboard');
-    Route::get('/buscar-sala', [ClassroomController::class, 'BuscarSalaAluno'])->name('buscar-sala');
-    Route::get('/historico-aulas', [ClassroomController::class, 'HistoricoAulasAluno'])->name('minhas-aulas');
-    Route::get('simulados', [ClassroomController::class, 'SimuladosAluno'])->name('simulados');
-    Route::get('/sala/{id}', [ClassroomController::class, 'showClassroom'])->name('show');
+    Route::get('/dashboard',         [DashboardController::class, 'DashboardAluno'])->name('dashboard');
+    Route::get('/buscar-sala',       [ClassroomController::class, 'BuscarSalaAluno'])->name('buscar-sala');
+    Route::get('/historico-aulas',   [ClassroomController::class, 'HistoricoAulasAluno'])->name('minhas-aulas');
+    Route::get('/simulados',         [ClassroomController::class, 'SimuladosAluno'])->name('simulados');
+    Route::get('/sala/{id}',         [ClassroomController::class, 'showClassroom'])->name('show');
     Route::post('/sala/{id}/entrar', [ClassroomController::class, 'join'])->name('join');
 });
 
-// Rotas Protegidas - Professor
+// ─── Professor ────────────────────────────────────────────────────────────────
 Route::middleware(['auth', 'role:professor'])->prefix('professor')->name('professor.')->group(function () {
-    Route::get('/dashboard', [DashboardController::class, 'DashboardProfessor'])->name('dashboard');
-    Route::get('/salas', [ClassroomController::class, 'teacherClassrooms'])->name('sala-aula');
+    Route::get('/dashboard',    [DashboardController::class, 'DashboardProfessor'])->name('dashboard');
+    Route::get('/salas',        [ClassroomController::class, 'teacherClassrooms'])->name('sala-aula');
     Route::get('/salas/create', [ClassroomController::class, 'teacherClassrooms'])->name('sala-aula.create');
-    Route::get('/conteudos', [ClassroomController::class, 'teacherContents'])->name('conteudos');
-    Route::get('/avaliacoes', [ClassroomController::class, 'teacherEvaluations'])->name('avaliacoes');
-    Route::get('/relatorios', [ClassroomController::class, 'teacherReports'])->name('relatorios');
+    Route::get('/conteudos',    [ClassroomController::class, 'teacherContents'])->name('conteudos');
+    Route::get('/avaliacoes',   [ClassroomController::class, 'teacherEvaluations'])->name('avaliacoes');
+    Route::get('/relatorios',   [ClassroomController::class, 'teacherReports'])->name('relatorios');
 });
 
-// Rotas Protegidas - Admin
+// ─── Admin ────────────────────────────────────────────────────────────────────
+// O grupo já tem name('admin.'), o resource herda e gera automaticamente:
+//   admin.usuarios.index  | .create | .store | .edit | .update | .destroy
+//   admin.materias.index  | .create | .store | .edit | .update | .destroy
+//   admin.materias.toggle
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'DashboardAdmin'])->name('dashboard');
-    Route::get('/usuarios', [UserController::class, 'usuarios'])->name('usuarios');
+
+    Route::resource('usuarios', UserController::class);
+
+    Route::resource('materias', MateriaController::class);
+    Route::patch('materias/{materia}/toggle', [MateriaController::class, 'toggle'])->name('materias.toggle');
 });
