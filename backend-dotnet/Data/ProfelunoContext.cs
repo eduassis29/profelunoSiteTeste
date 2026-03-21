@@ -247,6 +247,7 @@ public partial class ProfelunoContext : DbContext
         modelBuilder.Entity<Materia>(entity =>
         {
             entity.HasKey(e => e.IdMateria).HasName("id");
+            entity.Property(e => e.IdMateria).HasColumnName("id");
             entity.ToTable("materias");
             entity.Property(e => e.NomeMateria)
                 .HasMaxLength(255)
