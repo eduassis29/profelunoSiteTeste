@@ -32,6 +32,8 @@ public partial class ProfelunoContext : DbContext
 
     public virtual DbSet<Cargo> Cargos { get; set; }
 
+    public virtual DbSet<Materia> Materias { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<AlunoSala>(entity =>
@@ -234,6 +236,22 @@ public partial class ProfelunoContext : DbContext
                 .HasMaxLength(255)
                 .HasColumnName("nome_cargo");
             entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.CreatedAt)
+                .HasColumnType("timestamp(0) without time zone")
+                .HasColumnName("created_at");
+            entity.Property(e => e.UpdatedAt)
+                .HasColumnType("timestamp(0) without time zone")
+                .HasColumnName("updated_at");
+        });
+
+        modelBuilder.Entity<Materia>(entity =>
+        {
+            entity.HasKey(e => e.IdMateria).HasName("id");
+            entity.ToTable("materias");
+            entity.Property(e => e.NomeMateria)
+                .HasMaxLength(255)
+                .HasColumnName("nome_materia");
+            entity.Property(e => e.SituacaoMateria).HasColumnName("situacao_materia");
             entity.Property(e => e.CreatedAt)
                 .HasColumnType("timestamp(0) without time zone")
                 .HasColumnName("created_at");

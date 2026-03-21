@@ -85,7 +85,7 @@ class MateriaController extends Controller
         $materia = null;
 
         try {
-            $response = Http::get("{$this->baseUrl}/v1/Materia/BuscarMateria/{$id}");
+            $response = Http::get("{$this->baseUrl}/v1/Materia/BuscarMateriaPorId/{$id}");
 
             if ($response->successful()) {
                 $materia = (object) $response->json();
@@ -182,7 +182,7 @@ class MateriaController extends Controller
     {
         try {
             // Primeiro busca o estado atual
-            $responseGet = Http::get("{$this->baseUrl}/v1/Materia/BuscarMateria/{$id}");
+            $responseGet = Http::get("{$this->baseUrl}/v1/Materia/BuscarMateriaPorId/{$id}");
 
             if (!$responseGet->successful()) {
                 return redirect()

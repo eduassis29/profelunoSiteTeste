@@ -9,6 +9,7 @@ public static class DependencyInjectionConfig
     {
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<ICargoService, CargoServices>();
+        services.AddScoped<IMateriaService, MateriaService>();
 
         return services;
     }

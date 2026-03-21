@@ -49,7 +49,7 @@ namespace backend_dotnet.Services
 
             var user = await _context.Users.FirstOrDefaultAsync(x => x.Email == loginRequest.Email && x.Password == loginRequest.Password);
 
-            if(user == null) 
+            if(user == null)
             {
                 login = new LoginResponse
                 {
@@ -90,6 +90,15 @@ namespace backend_dotnet.Services
             await _context.Users.AddAsync(user);
             await _context.SaveChangesAsync();
 
+            return true;
+        }
+
+        public async Task<bool> DeletarUsuarioAsync(int idUsuario)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == idUsuario);
+            if(user == null) return false;
+            _context.Users.Remove(user);
+            await _context.SaveChangesAsync();
             return true;
         }
     }

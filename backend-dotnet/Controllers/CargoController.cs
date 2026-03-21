@@ -19,7 +19,7 @@ namespace backend_dotnet.Controllers
         /// Retorna Todos os Cargos
         /// </summary>
         /// <returns></returns>
-        [HttpGet("RetornaTodosCargos")]
+        [HttpGet("ListarCargos")]
         public async Task<IActionResult> RetornaCargosAsync()
         {
             var cargos = await _cargoService.RetornaTodosCargosAsync();

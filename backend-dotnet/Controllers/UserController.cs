@@ -19,7 +19,7 @@ namespace backend_dotnet.Controllers
         /// Retorna Todos os Usuarios
         /// </summary>
         /// <returns></returns>
-        [HttpGet("RetornaTodosUsuarios")]
+        [HttpGet("ListarUsuarios")]
         public async Task<IActionResult> RetornaUsuariosAsync()
         {
             var users = await _userService.RetornaTodosUsuariosAsync();
@@ -31,7 +31,7 @@ namespace backend_dotnet.Controllers
         /// </summary>
         /// <param name="idUsuario"></param>
         /// <returns></returns>
-        [HttpGet("RetornaUsuarioPorId/{idUsuario}")]
+        [HttpGet("BuscarUsuario/{idUsuario}")]
         public async Task<IActionResult> RetornaUsuarioPorIdAsync(int idUsuario)
         {
             var user = await _userService.RetornaUsuarioPorIdAsync(idUsuario);
@@ -70,9 +70,11 @@ namespace backend_dotnet.Controllers
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        [HttpPut("AtualizaUsuario")]
-        public async Task<IActionResult> AtualizaUsuarioAsync(User user)
+        [HttpPut("AtualizarUsuario{idUsuario}")]
+        public async Task<IActionResult> AtualizaUsuarioAsync(User user, int idUsuario)
         {
+            user.Id = idUsuario;
+
             var userAtualizado = await _userService.AtualizaUsuarioAsync(user);
             return Ok(userAtualizado);
         }
@@ -99,6 +101,14 @@ namespace backend_dotnet.Controllers
             if(resultado) return Ok("Usuário cadastrado com sucesso!");
 
             return BadRequest("Erro ao cadastrar usuário.");
+        }
+
+        [HttpDelete("DeletarUsuario/{idUsuario}")]
+        public async Task<IActionResult> DeletarUsuarioAsync(int idUsuario)
+        {
+            var resultado = await _userService.DeletarUsuarioAsync(idUsuario);
+            if(resultado) return Ok("Usuário deletado com sucesso!");
+            return BadRequest("Erro ao deletar usuário.");
         }
     }
 }

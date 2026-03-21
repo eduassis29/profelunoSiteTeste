@@ -13,5 +13,6 @@ namespace backend_dotnet.Services.Interfaces
         public Task<User> AtualizaUsuarioAsync(User user);
         public Task<LoginResponse> LoginAsync(LoginRequest loginRequest);
         public Task<bool> CadastrarUsuario(CadastroRequest cadastro);
+        public Task<bool> DeletarUsuarioAsync(int idUsuario);
     }
 }
