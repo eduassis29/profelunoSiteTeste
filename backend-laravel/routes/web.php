@@ -7,6 +7,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ClassroomController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\MateriaController;
+use App\Http\Controllers\CargoController;
 
 // ─── Raiz ────────────────────────────────────────────────────────────────────
 Route::get('/', function () {
@@ -63,6 +64,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 
     Route::resource('usuarios', UserController::class);
 
+    Route::resource('cargos', CargoController::class);
     Route::resource('materias', MateriaController::class);
     Route::patch('materias/{materia}/toggle', [MateriaController::class, 'toggle'])->name('materias.toggle');
 });
