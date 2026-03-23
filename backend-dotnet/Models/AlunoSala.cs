@@ -2,7 +2,7 @@
 
 public partial class AlunoSala
 {
-    public long Id { get; set; }
+    public long IdAlunoSala { get; set; }
     public long AlunoId { get; set; }
     public long SalaAulaId { get; set; }
     public DateTime? JoinedAt { get; set; }

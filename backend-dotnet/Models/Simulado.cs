@@ -2,7 +2,7 @@
 
 public partial class Simulado
 {
-    public long Id { get; set; }
+    public long IdSimulado { get; set; }
     public long SalaAulaId { get; set; }
     public int QuestaoCorreta { get; set; }
     public string? QuestaoA { get; set; }

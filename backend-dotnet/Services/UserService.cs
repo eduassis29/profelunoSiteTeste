@@ -18,27 +18,34 @@ namespace backend_dotnet.Services
 
         public async Task<IEnumerable<User>> RetornaTodosUsuariosAsync()
         {
-            return await _context.Users.ToListAsync();
+            return await _context.Users.AsNoTracking().ToListAsync();
         }
 
         public async Task<User> RetornaUsuarioPorIdAsync(int idUsuario)
         {
-            return await _context.Users.FirstOrDefaultAsync(x => x.Id == idUsuario);
+            return await _context.Users.AsNoTracking().FirstOrDefaultAsync(x => x.IdUser == idUsuario);
         }
 
         public async Task<User> RetornaUsuarioPorNomeAsync(string nomeUsuario)
         {
-            return await _context.Users.FirstOrDefaultAsync(x => x.Nome_Usuario.ToUpper().StartsWith(nomeUsuario.ToUpper()));
+            return await _context.Users.AsNoTracking().FirstOrDefaultAsync(x => x.Nome_Usuario.ToUpper().StartsWith(nomeUsuario.ToUpper()));
         }
 
         public async Task<User> RetornaUsuarioPorCargoAsync(int idCargo)
         {
-            return await _context.Users.FirstOrDefaultAsync(x => x.IdCargo == idCargo);
+            return await _context.Users.AsNoTracking().FirstOrDefaultAsync(x => x.IdCargo == idCargo);
         }
 
-        public async Task<User> AtualizaUsuarioAsync(User user)
+        public async Task<AtualizaUsuarioRequest> AtualizaUsuarioAsync(AtualizaUsuarioRequest user)
         {
-            _context.Users.Update(user);
+            var newUser = await _context.Users.FirstOrDefaultAsync(x => x.IdUser == user.IdUser);
+
+            newUser.Nome_Usuario = user.Nome_Usuario;
+            newUser.Email = user.Email;
+            newUser.IdCargo = user.IdCargo;
+            newUser.Password = user.Password;
+            newUser.UpdatedAt = DateTime.Now;
+
             await _context.SaveChangesAsync();
             return user;
         }
@@ -47,7 +54,7 @@ namespace backend_dotnet.Services
         {
             LoginResponse login = new LoginResponse();
 
-            var user = await _context.Users.FirstOrDefaultAsync(x => x.Email == loginRequest.Email && x.Password == loginRequest.Password);
+            var user = await _context.Users.AsNoTracking().FirstOrDefaultAsync(x => x.Email == loginRequest.Email && x.Password == loginRequest.Password);
 
             if(user == null)
             {
@@ -84,7 +91,6 @@ namespace backend_dotnet.Services
                 IdCargo = cadastro.IdCargo,
                 Password = cadastro.Senha,
                 CreatedAt = DateTime.Now,
-                UpdatedAt = DateTime.Now
             };
 
             await _context.Users.AddAsync(user);
@@ -95,7 +101,7 @@ namespace backend_dotnet.Services
 
         public async Task<bool> DeletarUsuarioAsync(int idUsuario)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == idUsuario);
+            var user = await _context.Users.FirstOrDefaultAsync(x => x.IdUser == idUsuario);
             if(user == null) return false;
             _context.Users.Remove(user);
             await _context.SaveChangesAsync();

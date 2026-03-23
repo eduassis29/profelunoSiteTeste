@@ -17,24 +17,29 @@ namespace backend_dotnet.Services
 
         public async Task<IEnumerable<Cargo>> RetornaTodosCargosAsync()
         {
-            return await _context.Cargos.ToListAsync();
+            return await _context.Cargos.AsNoTracking().ToListAsync();
         }
 
         public async Task<Cargo> RetornaCargoPorIdAsync(int idCargo)
         {
-            return await _context.Cargos.FirstOrDefaultAsync(x => x.Id == idCargo);
+            return await _context.Cargos.AsNoTracking().FirstOrDefaultAsync(x => x.IdCargo == idCargo);
         }
 
         public async Task<Cargo> RetornaCargoPorNomeAsync(string nomeCargo)
         {
-            return await _context.Cargos.FirstOrDefaultAsync(x => x.NomeCargo.ToUpper().StartsWith(nomeCargo.ToUpper()));
+            return await _context.Cargos.AsNoTracking().FirstOrDefaultAsync(x => x.NomeCargo.ToUpper().StartsWith(nomeCargo.ToUpper()));
         }
 
-        public async Task<Cargo> AtualizaCargoAsync(Cargo cargo)
+        public async Task<Cargo> AtualizaCargoAsync(AtualizarCargoRequest cargo)
         {
-            _context.Cargos.Update(cargo);
+            var newCargo = await _context.Cargos.FirstOrDefaultAsync(x => x.IdCargo == cargo.IdCargo);
+
+            newCargo.NomeCargo = cargo.NomeCargo;
+            newCargo.UpdatedAt = DateTime.Now;
+
+            _context.Cargos.Update(newCargo);
             await _context.SaveChangesAsync();
-            return cargo;
+            return newCargo;
         }
 
         public async Task<bool> CadastrarCargo(CargoRequest cargo)
@@ -49,12 +54,20 @@ namespace backend_dotnet.Services
             {
                 NomeCargo = cargo.Nome,
                 CreatedAt = DateTime.Now,
-                UpdatedAt = DateTime.Now
             };
 
             await _context.Cargos.AddAsync(newCargo);
             await _context.SaveChangesAsync();
 
+            return true;
+        }
+
+        public async Task<bool> DeletarCargoAsync(int idCargo)
+        {
+            var cargo = await _context.Cargos.FirstOrDefaultAsync(x => x.IdCargo == idCargo);
+            if(cargo == null) return false;
+            _context.Cargos.Remove(cargo);
+            await _context.SaveChangesAsync();
             return true;
         }
     }

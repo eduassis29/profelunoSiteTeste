@@ -8,7 +8,8 @@ namespace backend_dotnet.Services.Interfaces
         public Task<IEnumerable<Cargo>> RetornaTodosCargosAsync();
         public Task<Cargo> RetornaCargoPorIdAsync(int idCargo);
         public Task<Cargo> RetornaCargoPorNomeAsync(string nomeCargo);
-        public Task<Cargo> AtualizaCargoAsync(Cargo cargo);
+        public Task<Cargo> AtualizaCargoAsync(AtualizarCargoRequest cargo);
         public Task<bool> CadastrarCargo(CargoRequest cargo);
+        public Task<bool> DeletarCargoAsync(int idCargo);
     }
 }

@@ -1,4 +1,5 @@
 ﻿using backend_dotnet.Models;
+using backend_dotnet.Models.Requests;
 using backend_dotnet.Services;
 using backend_dotnet.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -40,18 +41,16 @@ namespace backend_dotnet.Controllers
         }
 
         [HttpPost("CadastrarMateria")]
-        public async Task<IActionResult> CadastrarMateriaAsync(Materia materia)
+        public async Task<IActionResult> CadastrarMateriaAsync([FromBody] CadastrarMateriaRequest materia)
         {
             var resultado = await _materiaService.CadastrarMateria(materia);
             if(!resultado) return BadRequest("Não foi possível cadastrar a matéria. Verifique se o nome já existe ou se os dados estão corretos.");
             return Ok("Matéria cadastrada com sucesso!");
         }
 
-         [HttpPut("AtualizarMateria/{idMateria}")]
-         public async Task<IActionResult> AtualizaMateriaAsync(Materia materia, int idMateria)
+        [HttpPut("AtualizarMateria")]
+        public async Task<IActionResult> AtualizaMateriaAsync([FromBody] AtualizarMateriaRequest materia)
         {
-            materia.IdMateria = idMateria;
-
             var materiaAtualizado = await _materiaService.AtualizaMateriaAsync(materia);
             return Ok(materiaAtualizado);
         }

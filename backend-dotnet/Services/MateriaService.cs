@@ -1,5 +1,6 @@
 ﻿using backend_dotnet.Data;
 using backend_dotnet.Models;
+using backend_dotnet.Models.Requests;
 using backend_dotnet.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,18 +16,17 @@ namespace backend_dotnet.Services
 
         public async Task<IEnumerable<Materia>> RetornaTodasMateriasAsync()
         {
-            return await _context.Materias.ToListAsync();
+            return await _context.Materias.AsNoTracking().ToListAsync();
         }
-        public async Task<bool> CadastrarMateria(Materia materia)
+
+        public async Task<bool> CadastrarMateria(CadastrarMateriaRequest materia)
         {
             if(materia == null) return false;
-            var nomeExistente = await _context.Materias.AnyAsync(x => x.NomeMateria == materia.NomeMateria);
-            if(nomeExistente) return false;
             Materia newMateria = new Materia
             {
                 NomeMateria = materia.NomeMateria,
+                SituacaoMateria = materia.SituacaoMateria,
                 CreatedAt = DateTime.Now,
-                UpdatedAt = DateTime.Now
             };
             await _context.Materias.AddAsync(newMateria);
             await _context.SaveChangesAsync();
@@ -35,19 +35,25 @@ namespace backend_dotnet.Services
 
         public async Task<Materia> RetornaMateriaPorIdAsync(int idMateria)
         {
-            return await _context.Materias.FirstOrDefaultAsync(x => x.IdMateria == idMateria);
+            return await _context.Materias.AsNoTracking().FirstOrDefaultAsync(x => x.IdMateria == idMateria);
         }
 
          public async Task<Materia> RetornaMateriaPorNomeAsync(string nomeMateria)
         {
-            return await _context.Materias.FirstOrDefaultAsync(x => x.NomeMateria.ToUpper().StartsWith(nomeMateria.ToUpper()));
+            return await _context.Materias.AsNoTracking().FirstOrDefaultAsync(x => x.NomeMateria.ToUpper().StartsWith(nomeMateria.ToUpper()));
         }
 
-         public async Task<Materia> AtualizaMateriaAsync(Materia materia)
+         public async Task<Materia> AtualizaMateriaAsync(AtualizarMateriaRequest materia)
         {
-            _context.Materias.Update(materia);
+            var newMateria = await _context.Materias.FirstOrDefaultAsync(x => x.IdMateria == materia.IdMateria);
+
+            newMateria.NomeMateria = materia.NomeMateria;
+            newMateria.SituacaoMateria = materia.SituacaoMateria;
+            newMateria.UpdatedAt = DateTime.Now;
+
+            _context.Materias.Update(newMateria);
             await _context.SaveChangesAsync();
-            return materia;
+            return newMateria;
         }
 
         public async Task<bool> DeletarMateria(int idMateria)

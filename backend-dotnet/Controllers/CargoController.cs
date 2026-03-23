@@ -1,6 +1,7 @@
 using backend_dotnet.Models;
 using backend_dotnet.Models.Requests;
 using backend_dotnet.Services.Interfaces;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace backend_dotnet.Controllers
@@ -57,8 +58,8 @@ namespace backend_dotnet.Controllers
         /// </summary>
         /// <param name="cargo"></param>
         /// <returns></returns>
-        [HttpPut("AtualizaCargo")]
-        public async Task<IActionResult> AtualizaCargoAsync(Cargo cargo)
+        [HttpPut("AtualizarCargo")]
+        public async Task<IActionResult> AtualizaCargoAsync([FromBody] AtualizarCargoRequest cargo)
         {
             var cargoAtualizado = await _cargoService.AtualizaCargoAsync(cargo);
             return Ok(cargoAtualizado);
@@ -72,6 +73,13 @@ namespace backend_dotnet.Controllers
             if(resultado) return Ok("Cargo cadastrado com sucesso!");
 
             return BadRequest("Erro ao cadastrar cargo.");
+        }
+
+        [HttpDelete("DeletarCargo")]
+        public async Task<IActionResult> DeletarCargo(int idCargo)
+        {
+            var resultado = _cargoService.DeletarCargoAsync(idCargo);
+            return Ok("Cargo Deletado com Sucesso");
         }
     }
 }

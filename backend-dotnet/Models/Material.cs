@@ -2,7 +2,7 @@
 
 public partial class Material
 {
-    public long Id { get; set; }
+    public long IdMaterial{ get; set; }
     public long? SalaAulaId { get; set; }
     public string Titulo { get; set; } = null!;
     public string? Descricao { get; set; }

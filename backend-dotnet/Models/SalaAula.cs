@@ -2,7 +2,7 @@
 
 public partial class SalaAula
 {
-    public long Id { get; set; }
+    public long IdSalaAula { get; set; }
     public string Titulo { get; set; } = null!;
     public string? Descricao { get; set; }
     public long? ProfessorId { get; set; }

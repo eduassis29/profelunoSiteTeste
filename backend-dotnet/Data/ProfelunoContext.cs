@@ -38,13 +38,9 @@ public partial class ProfelunoContext : DbContext
     {
         modelBuilder.Entity<AlunoSala>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("aluno_sala_pkey");
-
             entity.ToTable("aluno_sala");
-
-            entity.HasIndex(e => new { e.AlunoId, e.SalaAulaId }, "aluno_sala_aluno_id_sala_aula_id_unique").IsUnique();
-
-            entity.Property(e => e.Id).HasColumnName("id");
+            entity.HasKey(e => e.IdAlunoSala);
+            entity.Property(e => e.IdAlunoSala).HasColumnName("id");
             entity.Property(e => e.AlunoId).HasColumnName("aluno_id");
             entity.Property(e => e.CreatedAt)
                 .HasColumnType("timestamp(0) without time zone")
@@ -67,11 +63,9 @@ public partial class ProfelunoContext : DbContext
 
         modelBuilder.Entity<Material>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("material_pkey");
-
             entity.ToTable("material");
-
-            entity.Property(e => e.Id).HasColumnName("id");
+            entity.HasKey(e => e.IdMaterial);
+            entity.Property(e => e.IdMaterial).HasColumnName("id");
             entity.Property(e => e.CreatedAt)
                 .HasColumnType("timestamp(0) without time zone")
                 .HasColumnName("created_at");
@@ -97,10 +91,8 @@ public partial class ProfelunoContext : DbContext
 
         modelBuilder.Entity<Migration>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("migrations_pkey");
-
             entity.ToTable("migrations");
-
+            entity.HasKey(e => e.Id);
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.Batch).HasColumnName("batch");
             entity.Property(e => e.Migration1)
@@ -110,13 +102,10 @@ public partial class ProfelunoContext : DbContext
 
         modelBuilder.Entity<Role>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("roles_pkey");
-
             entity.ToTable("roles");
-
+            entity.HasKey(e => e.IdRole);
+            entity.Property(e => e.IdRole).HasColumnName("id");
             entity.HasIndex(e => e.Name, "roles_name_unique").IsUnique();
-
-            entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.CreatedAt)
                 .HasColumnType("timestamp(0) without time zone")
                 .HasColumnName("created_at");
@@ -131,11 +120,9 @@ public partial class ProfelunoContext : DbContext
 
         modelBuilder.Entity<SalaAula>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("sala_aula_pkey");
-
             entity.ToTable("sala_aula");
-
-            entity.Property(e => e.Id).HasColumnName("id");
+            entity.HasKey(e => e.IdSalaAula);
+            entity.Property(e => e.IdSalaAula).HasColumnName("id");
             entity.Property(e => e.Avaliacao).HasColumnName("avaliacao");
             entity.Property(e => e.CreatedAt)
                 .HasColumnType("timestamp(0) without time zone")
@@ -174,11 +161,9 @@ public partial class ProfelunoContext : DbContext
 
         modelBuilder.Entity<Simulado>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("simulado_pkey");
-
             entity.ToTable("simulado");
-
-            entity.Property(e => e.Id).HasColumnName("id");
+            entity.HasKey(e => e.IdSimulado);
+            entity.Property(e => e.IdSimulado).HasColumnName("id");
             entity.Property(e => e.CreatedAt)
                 .HasColumnType("timestamp(0) without time zone")
                 .HasColumnName("created_at");
@@ -200,13 +185,10 @@ public partial class ProfelunoContext : DbContext
 
         modelBuilder.Entity<User>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("users_pkey");
-
             entity.ToTable("users");
-
+            entity.HasKey(e => e.IdUser);
+            entity.Property(e => e.IdUser).HasColumnName("id");
             entity.HasIndex(e => e.Email, "users_email_unique").IsUnique();
-
-            entity.Property(e => e.Id).ValueGeneratedOnAdd().HasColumnName("id");
             entity.Property(e => e.CreatedAt)
                 .HasColumnType("timestamp(0) without time zone")
                 .HasColumnName("created_at");
@@ -218,7 +200,6 @@ public partial class ProfelunoContext : DbContext
                 .HasColumnName("password");
             entity.Property(e => e.IdCargo)
                 .HasColumnName("cargo_id");
-
             entity.Property(e => e.Nome_Usuario)
                 .HasMaxLength(255)
                 .HasColumnName("nome_usuario");
@@ -229,13 +210,12 @@ public partial class ProfelunoContext : DbContext
 
         modelBuilder.Entity<Cargo>(entity => 
         {
-            entity.HasKey(e => e.Id).HasName("cargos_pkey");
             entity.ToTable("cargos");
-            entity.HasIndex(e => e.NomeCargo, "cargos_name_unique").IsUnique();
+            entity.HasKey(e => e.IdCargo);
+            entity.Property(e => e.IdCargo).HasColumnName("id");
             entity.Property(e => e.NomeCargo)
                 .HasMaxLength(255)
                 .HasColumnName("nome_cargo");
-            entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.CreatedAt)
                 .HasColumnType("timestamp(0) without time zone")
                 .HasColumnName("created_at");
@@ -246,9 +226,9 @@ public partial class ProfelunoContext : DbContext
 
         modelBuilder.Entity<Materia>(entity =>
         {
-            entity.HasKey(e => e.IdMateria).HasName("id");
-            entity.Property(e => e.IdMateria).HasColumnName("id");
             entity.ToTable("materias");
+            entity.HasKey(e => e.IdMateria);
+            entity.Property(e => e.IdMateria).HasColumnName("id");
             entity.Property(e => e.NomeMateria)
                 .HasMaxLength(255)
                 .HasColumnName("nome_materia");
