@@ -64,11 +64,11 @@ namespace backend_dotnet.Services
 
         public async Task<bool> DeletarCargoAsync(int idCargo)
         {
-            var cargo = await _context.Cargos.FirstOrDefaultAsync(x => x.IdCargo == idCargo);
-            if(cargo == null) return false;
-            _context.Cargos.Remove(cargo);
-            await _context.SaveChangesAsync();
-            return true;
+            int linhasAfetadas = await _context.Cargos
+                .Where(x => x.IdCargo == idCargo)
+                .ExecuteDeleteAsync();
+
+            return linhasAfetadas > 0;
         }
     }
 }

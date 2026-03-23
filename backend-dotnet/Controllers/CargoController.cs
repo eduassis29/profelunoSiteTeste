@@ -78,8 +78,15 @@ namespace backend_dotnet.Controllers
         [HttpDelete("DeletarCargo/{idCargo}")]
         public async Task<IActionResult> DeletarCargo(int idCargo)
         {
-            var resultado = _cargoService.DeletarCargoAsync(idCargo);
-            return Ok("Cargo Deletado com Sucesso");
+            try
+            {
+                var resultado = _cargoService.DeletarCargoAsync(idCargo);
+                return Ok("Cargo Deletado com Sucesso");
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(ex);
+            }
         }
     }
 }
