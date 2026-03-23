@@ -39,6 +39,14 @@ namespace backend_dotnet.Controllers
             return Ok(user);
         }
 
+        [HttpGet("RetornaUsuarioPorNomeUsuarioIdCargo/{nomeUsuario}/{idCargo}")]
+        public async Task<IActionResult> RetornaUsuarioPorNomeUsuarioIdCargo(string nomeUsuario, int idCargo)
+        {
+            var user = await _userService.RetornaUsuarioPorNomeUsuarioIdCargo(nomeUsuario, idCargo);
+            if(user == null) return NotFound();
+            return Ok(user);
+        }
+
         /// <summary>
         /// Retorna o Usuario por Nome
         /// </summary>

@@ -3,168 +3,306 @@
 
 @section('title', 'Minhas Salas de Aula')
 
+@section('styles')
+<link rel="stylesheet" href="{{ asset('css/sala-professor.css') }}">
+@endsection
+
 @section('content')
-<div class="current-class-section">
-    <h2 class="section-title">
-        <i class="fas fa-play-circle"></i>
-        Aula em Andamento
-    </h2>
 
-    {{-- @php
-        $activeClass = $classrooms->where('status', 'active')->first();
-    @endphp --}}
+{{-- ============================================================
+     HEADER DA PÁGINA
+     ============================================================ --}}
+<div class="page-header">
+    <div class="page-header-left">
+        <h1 class="page-title">Salas de Aula</h1>
+        <p class="page-subtitle">Gerencie, agende e inicie suas aulas</p>
+    </div>
+    <div class="page-header-right">
+        <a href="{{ route('professor.sala.criar') }}" class="btn-new-class">
+            <i class="fas fa-plus"></i>
+            Nova Sala
+        </a>
+    </div>
+</div>
 
-    {{-- @if($activeClass) --}}
-        <div class="current-class-card">
-            <div class="current-class-header">
-                <div class="current-class-info">
-                    <h2>{{-- $activeClass->title }}</h2>
-                    <div class="current-class-meta">
-                        <div class="meta-item">
-                            <i class="fas fa-book"></i>
-                            {{-- $activeClass->subject --}}
-                        </div>
-                        <div class="meta-item">
-                            <i class="fas fa-users"></i>
-                            {{-- $activeClass->students()->count() --}} alunos
-                        </div>
-                        <div class="meta-item">
-                            <i class="fas fa-clock"></i>
-                            {{-- $activeClass->start_time?->format('H:i') ?? 'Sem horário' }}
-                        </div>
-                    </div>
+{{-- ============================================================
+     TABS DE NAVEGAÇÃO
+     ============================================================ --}}
+<div class="tabs-nav">
+    <button class="tab-btn active" data-tab="todas">
+        <i class="fas fa-th-large"></i>
+        Todas
+        <span class="tab-count">{{ $salas->total() ?? 0 }}</span>
+    </button>
+    <button class="tab-btn" data-tab="ao-vivo">
+        <i class="fas fa-circle pulse-dot"></i>
+        Ao Vivo
+        <span class="tab-count live-count">{{ $salas->where('status', 'active')->count() ?? 0 }}</span>
+    </button>
+    <button class="tab-btn" data-tab="agendadas">
+        <i class="fas fa-calendar-alt"></i>
+        Agendadas
+        <span class="tab-count">{{ $salas->where('status', 'pending')->count() ?? 0 }}</span>
+    </button>
+    <button class="tab-btn" data-tab="concluidas">
+        <i class="fas fa-check-circle"></i>
+        Concluídas
+        <span class="tab-count">{{ $salas->where('status', 'completed')->count() ?? 0 }}</span>
+    </button>
+</div>
+
+{{-- ============================================================
+     AULA AO VIVO (aparece só se houver active)
+     ============================================================ --}}
+@php
+    $salaAtiva = $salas->where('status', 'active')->first();
+@endphp
+
+@if($salaAtiva)
+<div class="live-banner" id="tab-ao-vivo">
+    <div class="live-banner-glow"></div>
+    <div class="live-banner-content">
+        <div class="live-left">
+            <span class="live-pill">
+                <span class="live-dot"></span>
+                AO VIVO
+            </span>
+            <div class="live-info">
+                <h2>{{ $salaAtiva->titulo }}</h2>
+                <div class="live-meta">
+                    <span><i class="fas fa-book"></i> {{ $salaAtiva->materia }}</span>
+                    <span><i class="fas fa-users"></i> {{ $salaAtiva->qtd_alunos }} alunos</span>
+                    <span><i class="fas fa-clock"></i> {{ $salaAtiva->data_hora_inicio?->format('H:i') ?? '--:--' }}</span>
                 </div>
-                <span class="live-badge">
-                    <i class="fas fa-circle"></i>
-                    AO VIVO
-                </span>
             </div>
-
-            <div class="current-class-stats">
-                <div class="stat-box">
-                    <h4>{{-- $activeClass->students()->count() --}}</h4>
-                    <p>Participantes</p>
+        </div>
+        <div class="live-right">
+            <div class="live-stats">
+                <div class="live-stat">
+                    <strong>{{ $salaAtiva->qtd_alunos }}</strong>
+                    <span>Participantes</span>
                 </div>
-                <div class="stat-box">
-                    <h4>{{-- $activeClass->materials()->count() --}}</h4>
-                    <p>Materiais</p>
+                <div class="live-stat">
+                    <strong>{{ $salaAtiva->material ? 1 : 0 }}</strong>
+                    <span>Materiais</span>
                 </div>
-                <div class="stat-box">
-                    <h4>45 min</h4>
-                    <p>Duração</p>
+                <div class="live-stat">
+                    <strong id="live-timer">00:00</strong>
+                    <span>Duração</span>
                 </div>
             </div>
-
-            <div class="current-class-actions">
-                <a href="{{-- route('aluno.show', $activeClass->id) }}" class="action-btn primary">
+            <div class="live-actions">
+                <a href="{{ route('professor.sala.show', $salaAtiva->id) }}" class="btn-enter-live">
                     <i class="fas fa-video"></i>
-                    Acessar Aula
+                    Entrar na Aula
                 </a>
-                <button class="action-btn secondary">
+                <button class="btn-live-config" title="Configurações">
                     <i class="fas fa-cog"></i>
-                    Configurações
                 </button>
             </div>
         </div>
-    {{-- @else --}}
-        <div class="empty-state">
-            <i class="fas fa-inbox"></i>
-            <h3>Nenhuma aula em andamento</h3>
-        </div>
-    {{-- @endif --}}
+    </div>
 </div>
+@endif
 
-<div class="past-classes-section">
+{{-- ============================================================
+     SALAS AGENDADAS / PRONTAS PARA INICIAR
+     ============================================================ --}}
+@php
+    $salasAgendadas = $salas->where('status', 'pending');
+@endphp
+
+@if($salasAgendadas->count())
+<div class="section-block" id="tab-agendadas">
+    <div class="section-block-header">
+        <h2 class="section-title">
+            <i class="fas fa-calendar-check"></i>
+            Agendadas &amp; Prontas para Iniciar
+        </h2>
+    </div>
+    <div class="scheduled-list">
+        @foreach($salasAgendadas as $sala)
+        <div class="scheduled-card">
+            <div class="scheduled-date-block">
+                <span class="sched-day">{{ $sala->data_hora_inicio?->format('d') ?? '--' }}</span>
+                <span class="sched-month">{{ $sala->data_hora_inicio?->translatedFormat('M') ?? '---' }}</span>
+                <span class="sched-time">{{ $sala->data_hora_inicio?->format('H:i') ?? '--:--' }}</span>
+            </div>
+            <div class="scheduled-info">
+                <h4>{{ $sala->titulo }}</h4>
+                <p>
+                    <i class="fas fa-book"></i> {{ $sala->materia }}
+                    &nbsp;&nbsp;
+                    <i class="fas fa-users"></i> {{ $sala->qtd_alunos }} alunos
+                </p>
+            </div>
+            <div class="scheduled-actions">
+                @php
+                    $agora = now();
+                    $inicio = $sala->data_hora_inicio;
+                    $pronta = $inicio && $agora->gte($inicio->subMinutes(15));
+                @endphp
+                @if($pronta)
+                    <a href="{{ route('professor.sala.iniciar', $sala->id) }}" class="btn-start-now">
+                        <i class="fas fa-play"></i>
+                        Iniciar Agora
+                    </a>
+                @else
+                    <span class="countdown-badge" data-start="{{ $inicio?->toIso8601String() }}">
+                        <i class="fas fa-hourglass-half"></i>
+                        <span class="countdown-label">Em breve</span>
+                    </span>
+                @endif
+                <a href="{{ route('professor.sala.editar', $sala->id) }}" class="icon-btn" title="Editar">
+                    <i class="fas fa-edit"></i>
+                </a>
+                <button class="icon-btn danger" data-id="{{ $sala->id }}" title="Cancelar">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+        @endforeach
+    </div>
+</div>
+@endif
+
+{{-- ============================================================
+     FILTRO + GRID DE TODAS AS SALAS
+     ============================================================ --}}
+<div class="section-block" id="tab-todas">
     <div class="filter-bar">
         <h2 class="section-title">
             <i class="fas fa-list"></i>
             Todas as Salas
         </h2>
-        <div style="display: flex; gap: 10px;">
+        <div class="filter-controls">
             <div class="search-box">
-                <input type="text" id="searchClassrooms" placeholder="Buscar sala...">
                 <i class="fas fa-search"></i>
+                <input type="text" id="searchSalas" placeholder="Buscar sala, matéria...">
             </div>
             <select class="filter-select" id="filterStatus">
-                <option value="">Todos os Status</option>
+                <option value="">Todos os status</option>
                 <option value="active">Ativas</option>
+                <option value="pending">Agendadas</option>
                 <option value="completed">Concluídas</option>
-                <option value="archived">Arquivadas</option>
             </select>
+            <select class="filter-select" id="filterMateria">
+                <option value="">Todas as matérias</option>
+                @foreach($salas->pluck('materia')->unique() as $mat)
+                    <option value="{{ $mat }}">{{ $mat }}</option>
+                @endforeach
+            </select>
+            <div class="view-toggle">
+                <button class="view-btn-toggle active" data-view="grid" title="Grade">
+                    <i class="fas fa-th-large"></i>
+                </button>
+                <button class="view-btn-toggle" data-view="list" title="Lista">
+                    <i class="fas fa-list-ul"></i>
+                </button>
+            </div>
         </div>
     </div>
 
-    <div class="classes-grid">
-        {{-- @forelse($classrooms as $classroom) --}}
-            <div class="class-card">
-                <div class="class-card-header">
-                    <div class="class-card-title">
-                        <h3>{{-- $classroom->title --}}</h3>
-                        <p class="class-card-date">{{-- $classroom->created_at->format('d/m/Y') --}}</p>
-                    </div>
-                    <span class="class-status {{-- $classroom->status --}}">
-                        {{-- @if($classroom->status === 'active') --}}
-                             <i class="fas fa-play"></i> Ativa
-                            <i class="fas fa-play"></i> Ativa
-                        {{-- @elseif($classroom->status === 'completed') --}}
-                            <i class="fas fa-check"></i> Concluída
-                        {{-- @else --}}
-                            <i class="fas fa-archive"></i> Arquivada
-                        {{-- @endif --}}
-                    </span>
-                </div>
+    <div class="classes-grid" id="classesGrid">
+        @forelse($salas as $sala)
+        <div class="class-card"
+             data-status="{{ $sala->status }}"
+             data-materia="{{ Str::lower($sala->materia) }}"
+             data-titulo="{{ Str::lower($sala->titulo) }}">
 
-                <div class="class-card-info">
-                    <div class="info-row">
-                        <i class="fas fa-book"></i>
-                        <span>{{ $classroom->subject ?? 'Sem matéria' }}</span>
-                    </div>
-                    <div class="info-row">
-                        <i class="fas fa-layer-group"></i>
-                        <span>{{ $classroom->level ?? 'Sem nível' }}</span>
-                    </div>
-                    <div class="info-row">
-                        <i class="fas fa-align-left"></i>
-                        <span>{{-- Str::limit($classroom->description, 50) --}}</span>
-                    </div>
-                </div>
+            {{-- Ribbon de status --}}
+            <div class="card-ribbon {{ $sala->status }}">
+                @if($sala->status === 'active')
+                    <i class="fas fa-circle"></i> Ao Vivo
+                @elseif($sala->status === 'pending')
+                    <i class="fas fa-clock"></i> Agendada
+                @else
+                    <i class="fas fa-check"></i> Concluída
+                @endif
+            </div>
 
-                <div class="class-card-footer">
-                    <div class="students-count">
+            <div class="class-card-body">
+                <div class="class-card-icon">
+                    <i class="fas fa-chalkboard-teacher"></i>
+                </div>
+                <h3 class="class-card-title">{{ $sala->titulo }}</h3>
+                <span class="class-card-subject">{{ $sala->materia }}</span>
+
+                <div class="class-card-meta">
+                    <div class="meta-chip">
                         <i class="fas fa-users"></i>
-                        <span>{{-- $classroom->students()->count() --}} / {{-- $classroom->max_students --}} alunos</span>
+                        {{ $sala->qtd_alunos }} alunos
                     </div>
-                    <div class="card-actions">
-                        <a href="{{-- route('aluno.show', $classroom->id) --}}" class="icon-btn" title="Acessar">
-                            <i class="fas fa-eye"></i>
-                        </a>
-                        <button class="icon-btn" title="Editar">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <button class="icon-btn" title="Deletar">
-                            <i class="fas fa-trash"></i>
-                        </button>
+                    <div class="meta-chip">
+                        <i class="fas fa-calendar"></i>
+                        {{ $sala->data_hora_inicio?->format('d/m/Y') ?? 'Sem data' }}
+                    </div>
+                    <div class="meta-chip">
+                        <i class="fas fa-star"></i>
+                        {{ number_format($sala->avaliacao, 1) ?? '-' }}
                     </div>
                 </div>
+
+                @if($sala->descricao)
+                <p class="class-card-desc">{{ Str::limit($sala->descricao, 80) }}</p>
+                @endif
             </div>
-         {{-- @empty --}}
-            <div class="empty-state">
-                <i class="fas fa-inbox"></i>
-                <h3>Nenhuma sala criada</h3>
-                <p>Crie sua primeira sala para começar</p>
+
+            <div class="class-card-footer">
+                <a href="{{ route('professor.sala.show', $sala->id) }}" class="icon-btn" title="Visualizar">
+                    <i class="fas fa-eye"></i>
+                </a>
+                <a href="{{ route('professor.sala.editar', $sala->id) }}" class="icon-btn" title="Editar">
+                    <i class="fas fa-edit"></i>
+                </a>
+                @if($sala->status === 'pending')
+                <a href="{{ route('professor.sala.iniciar', $sala->id) }}" class="icon-btn success" title="Iniciar">
+                    <i class="fas fa-play"></i>
+                </a>
+                @endif
+                <button class="icon-btn danger btn-delete-sala" data-id="{{ $sala->id }}" title="Deletar">
+                    <i class="fas fa-trash"></i>
+                </button>
             </div>
-        {{-- @endforelse --}}
+        </div>
+        @empty
+        <div class="empty-state full-width">
+            <div class="empty-icon">
+                <i class="fas fa-chalkboard"></i>
+            </div>
+            <h3>Nenhuma sala criada ainda</h3>
+            <p>Crie sua primeira sala e comece a ensinar</p>
+            <a href="{{ route('professor.sala.criar') }}" class="btn-new-class">
+                <i class="fas fa-plus"></i> Criar Sala
+            </a>
+        </div>
+        @endforelse
     </div>
 
-    <!-- Pagination -->
-    <div style="margin-top: 30px;">
-        {{-- $classrooms->links() --}}
+    <div class="pagination-wrapper">
+        {{ $salas->links() }}
     </div>
 </div>
-@endsection
 
-@section('styles')
-<link rel="stylesheet" href="{{ asset('css/sala-professor.css') }}">
+{{-- Modal de confirmação de exclusão --}}
+<div class="modal-overlay" id="deleteModal">
+    <div class="modal-box">
+        <div class="modal-icon danger">
+            <i class="fas fa-trash-alt"></i>
+        </div>
+        <h3>Deletar Sala</h3>
+        <p>Tem certeza que deseja deletar esta sala? Esta ação não pode ser desfeita.</p>
+        <div class="modal-actions">
+            <button class="modal-btn cancel" id="cancelDelete">Cancelar</button>
+            <form id="deleteForm" method="POST">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="modal-btn confirm danger">Deletar</button>
+            </form>
+        </div>
+    </div>
+</div>
+
 @endsection
 
 @section('scripts')
