@@ -62,24 +62,24 @@
                 </a>
             </div>
             <div class="menu-item">
-                <a href="{{ route('professor.sala-aula') }}"
-                   class="menu-link {{ request()->routeIs('professor.sala-aula*') ? 'active' : '' }}">
+                <a href="{{ route('professor.salas.index') }}"
+                   class="menu-link {{ request()->routeIs('professor.salas.index') ? 'active' : '' }}">
                     <i class="fas fa-chalkboard-user"></i>
                     <span>Minhas Salas</span>
                 </a>
             </div>
             <div class="menu-item">
-                <a href="{{ route('professor.conteudos') }}"
-                   class="menu-link {{ request()->routeIs('professor.conteudos') ? 'active' : '' }}">
+                <a href="{{ route('professor.conteudo.index') }}"
+                   class="menu-link {{ request()->routeIs('professor.conteudo.index') ? 'active' : '' }}">
                     <i class="fas fa-book"></i>
                     <span>Conteúdos</span>
                 </a>
             </div>
             <div class="menu-item">
-                <a href="{{ route('professor.avaliacoes') }}"
-                   class="menu-link {{ request()->routeIs('professor.avaliacoes') ? 'active' : '' }}">
+                <a href="{{ route('professor.simulados.index') }}"
+                   class="menu-link {{ request()->routeIs('professor.simulados.index') ? 'active' : '' }}">
                     <i class="fas fa-clipboard-check"></i>
-                    <span>Avaliações</span>
+                    <span>Simulados</span>
                 </a>
             </div>
             <div class="menu-item">

@@ -16,9 +16,11 @@ class ClassroomAlunoController extends Controller
 
     public function create() {
         // Lógica para criar uma nova sala de aula para o aluno
+        return view('aluno.salas.create');
     }
 
     public function index() {
         // Lógica para listar as salas de aula do aluno
+        return view('aluno.salas.index');
     }
 }

@@ -11,12 +11,12 @@
 
 <div class="page-header">
     <div class="page-header-left">
-        <a href="{{ route('professor.sala.show', $sala->id) }}" class="back-link">
+        <a href="{{-- route('professor.sala.show', $sala->id) --}}" class="back-link">
             <i class="fas fa-arrow-left"></i>
             Voltar para a Sala
         </a>
-        <h1 class="page-title">Novo Material</h1>
-        <p class="page-subtitle">Adicione um material de apoio para a sala <strong>{{ $sala->titulo }}</strong></p>
+        <h1 class="page-title">Novo Conteúdo</h1>
+        <p class="page-subtitle">Adicione um conteúdo de apoio para a sala <strong>{{-- $sala->titulo --}}</strong></p>
     </div>
 </div>
 
@@ -24,14 +24,14 @@
 
     {{-- Formulário principal --}}
     <div class="form-col-main">
-        <form action="{{ route('professor.material.store') }}" method="POST" enctype="multipart/form-data" id="formMaterial">
+        <form action="{{ route('professor.conteudo.store') }}" method="POST" enctype="multipart/form-data" id="formMaterial">
             @csrf
-            <input type="hidden" name="sala_aula_id" value="{{ $sala->id }}">
+            <input type="hidden" name="sala_aula_id" value="{{-- $sala->id --}}">
 
             <div class="form-card">
                 <div class="form-card-header">
                     <i class="fas fa-folder-open"></i>
-                    <h3>Informações do Material</h3>
+                    <h3>Informações do Conteúdo</h3>
                 </div>
                 <div class="form-card-body">
 
@@ -135,7 +135,7 @@
             </div>
 
             <div class="form-actions">
-                <a href="{{ route('professor.sala.show', $sala->id) }}" class="btn-form-cancel">
+                <a href="{{-- route('professor.sala.show', $sala->id) --}}" class="btn-form-cancel">
                     <i class="fas fa-times"></i> Cancelar
                 </a>
                 <button type="submit" class="btn-form-submit">
@@ -163,17 +163,17 @@
             </div>
         </div>
 
-        @if($sala->materiais && $sala->materiais->count())
+        {{-- @if($sala->conteudos && $sala->conteudos->count())
         <div class="tips-card">
             <div class="tips-card-header">
                 <i class="fas fa-folder"></i>
-                Materiais desta Sala
+                Conteúdos desta Sala
             </div>
             <ul class="material-list-side">
-                @foreach($sala->materiais as $mat)
+                @foreach($sala->conteudos as $conteudo)
                 <li class="material-list-item">
-                    <span class="mat-type-icon {{ $mat->type }}">
-                        @switch($mat->type)
+                    <span class="mat-type-icon {{ $conteudo->type }}">
+                        @switch($conteudo->type)
                             @case('pdf')     <i class="fas fa-file-pdf"></i>   @break
                             @case('slide')   <i class="fas fa-desktop"></i>    @break
                             @case('video')   <i class="fas fa-film"></i>       @break
@@ -181,12 +181,12 @@
                             @default         <i class="fas fa-file"></i>
                         @endswitch
                     </span>
-                    <span class="mat-name">{{ Str::limit($mat->titulo, 35) }}</span>
+                    <span class="mat-name">{{ Str::limit($conteudo->titulo, 35) }}</span>
                 </li>
                 @endforeach
             </ul>
         </div>
-        @endif
+        @endif --}}
 
         <div class="tips-card">
             <div class="tips-card-header">

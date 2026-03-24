@@ -18,7 +18,7 @@
         <p class="page-subtitle">Gerencie, agende e inicie suas aulas</p>
     </div>
     <div class="page-header-right">
-        <a href="{{ route('professor.sala.criar') }}" class="btn-new-class">
+        <a href="{{ route('professor.salas.create') }}" class="btn-new-class">
             <i class="fas fa-plus"></i>
             Nova Sala
         </a>
@@ -92,7 +92,7 @@
                 </div>
             </div>
             <div class="live-actions">
-                <a href="{{ route('professor.sala.show', $salaAtiva->id) }}" class="btn-enter-live">
+                <a href="{{ route('professor.salas.show', $salaAtiva->id) }}" class="btn-enter-live">
                     <i class="fas fa-video"></i>
                     Entrar na Aula
                 </a>
@@ -153,7 +153,7 @@
                         <span class="countdown-label">Em breve</span>
                     </span>
                 @endif
-                <a href="{{ route('professor.sala.editar', $sala->id) }}" class="icon-btn" title="Editar">
+                <a href="{{ route('professor.salas.edit', $sala->id) }}" class="icon-btn" title="Editar">
                     <i class="fas fa-edit"></i>
                 </a>
                 <button class="icon-btn danger" data-id="{{ $sala->id }}" title="Cancelar">
@@ -249,14 +249,14 @@
             </div>
 
             <div class="class-card-footer">
-                <a href="{{ route('professor.sala.show', $sala->id) }}" class="icon-btn" title="Visualizar">
+                <a href="{{ route('professor.salas.show', $sala->id) }}" class="icon-btn" title="Visualizar">
                     <i class="fas fa-eye"></i>
                 </a>
-                <a href="{{ route('professor.sala.editar', $sala->id) }}" class="icon-btn" title="Editar">
+                <a href="{{ route('professor.salas.edit', $sala->id) }}" class="icon-btn" title="Editar">
                     <i class="fas fa-edit"></i>
                 </a>
                 @if($sala->status === 'pending')
-                <a href="{{ route('professor.sala.iniciar', $sala->id) }}" class="icon-btn success" title="Iniciar">
+                <a href="{{ route('professor.salas.iniciar', $sala->id) }}" class="icon-btn success" title="Iniciar">
                     <i class="fas fa-play"></i>
                 </a>
                 @endif
@@ -272,7 +272,7 @@
             </div>
             <h3>Nenhuma sala criada ainda</h3>
             <p>Crie sua primeira sala e comece a ensinar</p>
-            <a href="{{ route('professor.sala.criar') }}" class="btn-new-class">
+            <a href="{{ route('professor.salas.create') }}" class="btn-new-class">
                 <i class="fas fa-plus"></i> Criar Sala
             </a>
         </div>

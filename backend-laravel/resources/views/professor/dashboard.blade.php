@@ -13,7 +13,7 @@
             </div>
         </div>
         <div class="stat-value">
-            <h3>{{ $classrooms->sum(fn($c) => $c->students()->count()) }}</h3>
+            <h3>{{ $classrooms->sum(fn($c) => $c->qtd_alunos) }}</h3>
             <p class="stat-label">Total de Alunos</p>
         </div>
     </div>
@@ -59,7 +59,7 @@
 <div class="quick-actions">
     <h2 class="section-title">Ações Rápidas</h2>
     <div class="action-cards">
-        <a href="{{ route('professor.sala-aula.create') }}" class="action-card">
+        <a href="{{ route('professor.salas.create') }}" class="action-card">
             <div class="action-icon">
                 <i class="fas fa-plus"></i>
             </div>
@@ -67,7 +67,7 @@
             <p>Crie uma nova sala de aula virtual para seus alunos</p>
         </a>
 
-        <a href="{{ route('professor.sala-aula') }}" class="action-card">
+        <a href="{{ route('professor.salas.index') }}" class="action-card">
             <div class="action-icon">
                 <i class="fas fa-chalkboard-user"></i>
             </div>
@@ -89,47 +89,47 @@
 <div class="recent-activity">
     <h2 class="section-title">Aulas Recentes</h2>
 
-    @if($classrooms->count() > 0)
-        @foreach($classrooms as $classroom)
-            <div class="activity-item">
-                <div class="activity-icon" style="background: rgba(115, 103, 240, 0.15); color: var(--primary-color);">
-                    <i class="fas fa-chalkboard-user"></i>
-                </div>
-                <div class="activity-content" style="flex: 1;">
-                    <h4>{{ $classroom->title }}</h4>
-                    <p>
-                        {{ $classroom->subject ?? 'Sem matéria' }} &mdash;
-                        {{ $classroom->students()->count() }}/{{ $classroom->max_students }} alunos
-                    </p>
-                </div>
-                <div style="margin-left: auto; display: flex; align-items: center; gap: 12px;">
-                    @if($classroom->status === 'completed')
-                        <span class="badge-status badge-completed">
-                            <i class="fas fa-check"></i> Concluída
-                        </span>
-                    @elseif($classroom->status === 'active')
-                        <span class="badge-status badge-active">
-                            <i class="fas fa-play"></i> Ativa
-                        </span>
-                    @else
-                        <span class="badge-status badge-pending">
-                            <i class="fas fa-clock"></i> Pendente
-                        </span>
-                    @endif
-
-                    <a href="{{ route('aluno.show', $classroom->id) }}" class="view-btn">
-                        <i class="fas fa-eye"></i>
-                    </a>
-                </div>
+    @forelse($classrooms as $classroom)
+        <div class="activity-item">
+            <div class="activity-icon" style="background: rgba(115, 103, 240, 0.15); color: var(--primary-color);">
+                <i class="fas fa-chalkboard-user"></i>
             </div>
-        @endforeach
-    @else
-        <div class="empty-state">
-            <i class="fas fa-inbox" style="font-size: 48px; color: var(--text-secondary); margin-bottom: 15px;"></i>
-            <h3 style="color: var(--text-primary); margin-bottom: 8px;">Nenhuma aula criada</h3>
-            <p style="color: var(--text-secondary);">Você ainda não criou nenhuma aula.</p>
+            <div class="activity-content" style="flex: 1;">
+                <h4>{{ $classroom->titulo }}</h4>
+                <p>
+                    {{ $classroom->materia ?? 'Sem matéria' }} &mdash;
+                    {{ $classroom->qtd_alunos }} alunos
+                </p>
+            </div>
+            <div style="margin-left: auto; display: flex; align-items: center; gap: 12px;">
+                @if($classroom->status === 'completed')
+                    <span class="badge-status badge-completed">
+                        <i class="fas fa-check"></i> Concluída
+                    </span>
+                @elseif($classroom->status === 'active')
+                    <span class="badge-status badge-active">
+                        <i class="fas fa-play"></i> Ativa
+                    </span>
+                @else
+                    <span class="badge-status badge-pending">
+                        <i class="fas fa-clock"></i> Pendente
+                    </span>
+                @endif
+
+                <a href="{{ route('professor.salas.show', $classroom->id) }}" class="view-btn">
+                    <i class="fas fa-eye"></i>
+                </a>
+            </div>
         </div>
-    @endif
+    @empty
+        <div class="empty-state">
+            <i class="fas fa-inbox"></i>
+            <h3>Nenhuma aula criada</h3>
+            <p>Você ainda não criou nenhuma aula.</p>
+            <a href="{{ route('professor.salas.create') }}">Criar primeira aula</a>
+        </div>
+    @endforelse
+
 </div>
 
 @endsection

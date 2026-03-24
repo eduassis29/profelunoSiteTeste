@@ -6,7 +6,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ClassroomAlunoController;
 use App\Http\Controllers\ClassroomProfessorController;
-use App\Http\Controllers\MaterialController;
+use App\Http\Controllers\ConteudoController;
 use App\Http\Controllers\SimuladoController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\MateriaController;
@@ -57,13 +57,13 @@ Route::middleware(['auth', 'role:aluno'])->prefix('aluno')->name('aluno.')->grou
 //   professor.salas.update  PUT  /professor/salas/{sala}
 //   professor.salas.destroy DELETE /professor/salas/{sala}
 //
-//   professor.materiais.index   GET  /professor/materiais
-//   professor.materiais.create  GET  /professor/materiais/create
-//   professor.materiais.store   POST /professor/materiais
-//   professor.materiais.show    GET  /professor/materiais/{material}
-//   professor.materiais.edit    GET  /professor/materiais/{material}/edit
-//   professor.materiais.update  PUT  /professor/materiais/{material}
-//   professor.materiais.destroy DELETE /professor/materiais/{material}
+//   professor.conteudo.index   GET  /professor/conteudo
+//   professor.conteudo.create  GET  /professor/conteudo/create
+//   professor.conteudo.store   POST /professor/conteudo
+//   professor.conteudo.show    GET  /professor/conteudo/{conteudo}
+//   professor.conteudo.edit    GET  /professor/conteudo/{conteudo}/edit
+//   professor.conteudo.update  PUT  /professor/conteudo/{conteudo}
+//   professor.conteudo.destroy DELETE /professor/conteudo/{conteudo}
 //
 //   professor.simulados.index   GET  /professor/simulados
 //   professor.simulados.create  GET  /professor/simulados/create
@@ -81,14 +81,13 @@ Route::middleware(['auth', 'role:professor'])->prefix('professor')->name('profes
     Route::patch('salas/{sala}/iniciar',  [ClassroomProfessorController::class, 'iniciar'])->name('salas.iniciar');
     Route::patch('salas/{sala}/encerrar', [ClassroomProfessorController::class, 'encerrar'])->name('salas.encerrar');
  
-    // Materiais (views em resources/views/material/create.blade.php etc.)
-    Route::resource('materiais', MaterialController::class);
+    // conteudo (views em resources/views/conteudo/create.blade.php etc.)
+    Route::resource('conteudo', ConteudoController::class);
  
     // Simulados (views em resources/views/simulado/create.blade.php etc.)
     Route::resource('simulados', SimuladoController::class);
  
     // Outras seções
-    Route::get('/conteudos',  [ClassroomProfessorController::class, 'teacherContents'])->name('conteudos');
     Route::get('/avaliacoes', [ClassroomProfessorController::class, 'teacherEvaluations'])->name('avaliacoes');
     Route::get('/relatorios', [ClassroomProfessorController::class, 'teacherReports'])->name('relatorios');
 });

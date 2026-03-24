@@ -16,11 +16,10 @@ return new class extends Migration
             $table->string('titulo');
             $table->text('descricao')->nullable();
             $table->foreignId('user_id')->nullable()->constrained('users');
-            // $table->enum('status', ['pending', 'active', 'completed', 'archived'])->default('pending');
             $table->dateTime('data_hora_inicio')->nullable();
             $table->dateTime('data_hora_fim')->nullable();
             $table->string('materia');
-            $table->foreignId('material_id')->nullable()->constrained('material');
+            $table->foreignId('conteudo_id')->nullable()->constrained('conteudo');
             $table->integer('qtd_alunos');
             $table->string('url');
             $table->float('avaliacao');

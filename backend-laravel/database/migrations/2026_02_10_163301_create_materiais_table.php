@@ -11,9 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('material', function (Blueprint $table) {
+        Schema::create('conteudo', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('sala_aula_id')->nullable();
             $table->string('titulo');
             $table->text('descricao')->nullable();
             $table->enum('type', ['pdf', 'slide', 'video', 'document', 'other'])->default('document');
@@ -28,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('material');
+        Schema::dropIfExists('conteudo');
     }
 };
