@@ -16,28 +16,17 @@ class SimuladoController extends Controller
         $this->baseUrl = env('DOTNET_API_URL', 'http://profeluno_dotnet:9000');
     }
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // Helpers
-    // ─────────────────────────────────────────────────────────────────────────
+    // private function authHeaders(): array
+    // {
+    //     $token = session('api_token');
 
-    /**
-     * Retorna os headers padrão para as requisições à API .NET.
-     * O token JWT é lido da sessão do usuário autenticado.
-     */
-    private function authHeaders(): array
-    {
-        $token = session('api_token'); // Ajuste conforme onde você armazena o JWT
+    //     return [
+    //         'Accept'        => 'application/json',
+    //         'Content-Type'  => 'application/json',
+    //         'Authorization' => "Bearer {$token}",
+    //     ];
+    // }
 
-        return [
-            'Accept'        => 'application/json',
-            'Content-Type'  => 'application/json',
-            'Authorization' => "Bearer {$token}",
-        ];
-    }
-
-    /**
-     * Faz uma requisição GET à API e retorna o array de dados ou null em caso de erro.
-     */
     private function apiGet(string $endpoint): ?array
     {
         try {
@@ -60,9 +49,6 @@ class SimuladoController extends Controller
         }
     }
 
-    /**
-     * Faz uma requisição POST à API e retorna o array de dados ou null em caso de erro.
-     */
     private function apiPost(string $endpoint, array $data): ?array
     {
         try {
@@ -85,9 +71,6 @@ class SimuladoController extends Controller
         }
     }
 
-    /**
-     * Faz uma requisição PUT à API e retorna o array de dados ou null em caso de erro.
-     */
     private function apiPut(string $endpoint, array $data): ?array
     {
         try {
@@ -110,9 +93,6 @@ class SimuladoController extends Controller
         }
     }
 
-    /**
-     * Faz uma requisição DELETE à API e retorna true em caso de sucesso.
-     */
     private function apiDelete(string $endpoint): bool
     {
         try {

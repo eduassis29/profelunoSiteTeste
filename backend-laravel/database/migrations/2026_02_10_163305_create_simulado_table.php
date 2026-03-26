@@ -27,11 +27,8 @@ return new class extends Migration
                   ->nullOnDelete();
 
             // ── Vínculo com professor ──────────────────────────────────────
-            $table->unsignedBigInteger('professor_id')->nullable();
-            $table->foreign('professor_id')
-                  ->references('id')
-                  ->on('users')
-                  ->nullOnDelete();
+            $table->foreignId('user_id')->nullable()->constrained('users');
+
 
             $table->timestamps();
         });

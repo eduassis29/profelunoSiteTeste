@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('conteudo', function (Blueprint $table) {
             $table->id();
             $table->string('titulo');
+            $table->foreignId('user_id')->nullable()->constrained('users');
             $table->text('descricao')->nullable();
             $table->enum('type', ['pdf', 'slide', 'video', 'document', 'other'])->default('document');
             $table->string('file_path')->nullable();
