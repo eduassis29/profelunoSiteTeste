@@ -11,7 +11,7 @@
 
 <form action="{{ route('professor.simulados.store') }}" method="POST" id="formSimulado">
     @csrf
-    @include('professor.simulado._form', ['salas' => $salas])
+    @include('professor.simulado._form', ['materias' => $materias])
 </form>
 
 @endsection

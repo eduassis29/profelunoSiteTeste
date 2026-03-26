@@ -16,23 +16,23 @@ class SimuladoController extends Controller
         $this->baseUrl = env('DOTNET_API_URL', 'http://profeluno_dotnet:9000');
     }
 
-    // private function authHeaders(): array
-    // {
-    //     $token = session('api_token');
+    private function authHeaders(): array
+    {
+        $token = session('api_token');
 
-    //     return [
-    //         'Accept'        => 'application/json',
-    //         'Content-Type'  => 'application/json',
-    //         'Authorization' => "Bearer {$token}",
-    //     ];
-    // }
+        return [
+            'Accept'        => 'application/json',
+            'Content-Type'  => 'application/json',
+            'Authorization' => "Bearer {$token}",
+        ];
+    }
 
     private function apiGet(string $endpoint): ?array
     {
         try {
             $response = Http::withHeaders($this->authHeaders())
                 ->timeout(15)
-                ->get("{$this->baseUrl}{$endpoint}");
+                ->get("{$this->baseUrl}/v1/{$endpoint}");
 
             if ($response->successful()) {
                 return $response->json();
@@ -54,7 +54,7 @@ class SimuladoController extends Controller
         try {
             $response = Http::withHeaders($this->authHeaders())
                 ->timeout(15)
-                ->post("{$this->baseUrl}{$endpoint}", $data);
+                ->post("{$this->baseUrl}/v1/{$endpoint}", $data);
 
             if ($response->successful()) {
                 return $response->json();
@@ -76,7 +76,7 @@ class SimuladoController extends Controller
         try {
             $response = Http::withHeaders($this->authHeaders())
                 ->timeout(15)
-                ->put("{$this->baseUrl}{$endpoint}", $data);
+                ->put("{$this->baseUrl}/v1/{$endpoint}", $data);
 
             if ($response->successful()) {
                 return $response->json();
@@ -98,7 +98,7 @@ class SimuladoController extends Controller
         try {
             $response = Http::withHeaders($this->authHeaders())
                 ->timeout(15)
-                ->delete("{$this->baseUrl}{$endpoint}");
+                ->delete("{$this->baseUrl}/v1/{$endpoint}");
 
             if ($response->successful()) {
                 return true;
@@ -129,7 +129,7 @@ class SimuladoController extends Controller
         $professorId = Auth::id();
 
         // ── Chamada à API .NET ──────────────────────────────────────────────
-        $data = $this->apiGet("/api/simulados?professor_id={$professorId}");
+        $data = $this->apiGet("Simulados/BuscarSimuladoPorId/{$id}");
 
         // ── Fallback: dados fictícios enquanto a API não está disponível ────
         // TODO: remover após integração completa
@@ -198,26 +198,13 @@ class SimuladoController extends Controller
 
     /**
      * Exibe o formulário de criação de simulado.
-     * Busca as salas de aula disponíveis do professor para preencher o select.
+     * Busca as materias disponíveis do professor para preencher o select.
      *
-     * GET /api/salas?professor_id={id}
+     * GET /api/materias?professor_id={id}
      */
     public function create()
     {
-        $professorId = Auth::id();
-
-        // ── Busca salas do professor para o select ──────────────────────────
-        $salas = $this->apiGet("/api/salas?professor_id={$professorId}") ?? [];
-
-        // Fallback enquanto a API não está disponível
-        // TODO: remover após integração completa
-        if (empty($salas)) {
-            $salas = [
-                ['id' => 1, 'nome' => 'Aula de Matemática', 'materia' => 'Matemática'],
-                ['id' => 2, 'nome' => 'Aula de Física',     'materia' => 'Física'],
-                ['id' => 3, 'nome' => 'Aula de Química',    'materia' => 'Química'],
-            ];
-        }
+        $materias = $this->apiGet("Materia/ListarMaterias") ?? [];
 
         $ultimapagina = "<a href='" . route('professor.simulados.index') . "' class='back-link'>
             <i class='fas fa-arrow-left'></i>
@@ -227,7 +214,7 @@ class SimuladoController extends Controller
         $title    = '<i class="fas fa-plus"></i> Criar Simulado';
         $subtitle = 'Preencha os detalhes para criar um novo simulado';
 
-        return view('professor.simulado.create', compact('salas', 'title', 'subtitle', 'ultimapagina'));
+        return view('professor.simulado.create', compact('materias', 'title', 'subtitle', 'ultimapagina'));
     }
 
     /**
@@ -239,7 +226,7 @@ class SimuladoController extends Controller
      * {
      *   "titulo":       "string",
      *   "descricao":    "string|null",
-     *   "sala_aula_id": int,
+     *   "materia_id":   int,
      *   "professor_id": int,
      *   "situacao":     bool,
      *   "questoes": [
@@ -261,7 +248,7 @@ class SimuladoController extends Controller
         $request->validate([
             'titulo'                            => 'required|string|max:255',
             'descricao'                         => 'nullable|string',
-            'sala_aula_id'                      => 'required|integer',
+            'materia_id'                        => 'required|integer',
             'questoes'                          => 'required|array|min:1',
             'questoes.*.enunciado'              => 'required|string',
             'questoes.*.questao_a'              => 'required|string',
@@ -292,12 +279,12 @@ class SimuladoController extends Controller
         $payload = [
             'titulo'       => $request->titulo,
             'descricao'    => $request->descricao,
-            'sala_aula_id' => (int) $request->sala_aula_id,
+            'materia_id'   => (int) $request->materia_id,
             'professor_id' => Auth::id(),
             'situacao'     => true,
             'questoes'     => $questoes,
         ];
-
+        dd($payload);
         // ── Chamada à API .NET ──────────────────────────────────────────────
         $resultado = $this->apiPost('/api/simulados', $payload);
 
@@ -319,7 +306,7 @@ class SimuladoController extends Controller
      */
     public function show(int $id)
     {
-        $simulado = $this->apiGet("/api/simulados/{$id}");
+        $simulado = $this->apiGet("/Simulados/BuscarSimuladoPorId/{$id}");
 
         if (is_null($simulado)) {
             return redirect()
@@ -348,7 +335,7 @@ class SimuladoController extends Controller
     {
         $professorId = Auth::id();
 
-        $simulado = $this->apiGet("/api/simulados/{$id}");
+        $simulado = $this->apiGet("/Simulados/BuscarSimuladoPorId/{$id}");
 
         if (is_null($simulado)) {
             return redirect()
@@ -356,7 +343,7 @@ class SimuladoController extends Controller
                 ->with('error', 'Simulado não encontrado.');
         }
 
-        $salas = $this->apiGet("/api/salas?professor_id={$professorId}") ?? [];
+        $materias = $this->apiGet("Materia/ListarMaterias") ?? [];
 
         $title    = '<i class="fas fa-pen"></i> Editar Simulado';
         $subtitle = 'Atualize os dados do simulado';
@@ -366,7 +353,7 @@ class SimuladoController extends Controller
             Voltar
         </a>";
 
-        return view('professor.simulado.edit', compact('simulado', 'salas', 'title', 'subtitle', 'ultimapagina'));
+        return view('professor.simulado.edit', compact('simulado', 'materias', 'title', 'subtitle', 'ultimapagina'));
     }
 
     /**
@@ -456,7 +443,7 @@ class SimuladoController extends Controller
     public function toggleSituacao(int $id)
     {
         // Primeiro busca o simulado para saber a situação atual
-        $simulado = $this->apiGet("/api/simulados/{$id}");
+        $simulado = $this->apiGet("/Simulados/BuscarSimuladoPorId/{$id}");
 
         if (is_null($simulado)) {
             return response()->json(['error' => 'Simulado não encontrado'], 404);

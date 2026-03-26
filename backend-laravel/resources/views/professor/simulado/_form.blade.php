@@ -1,6 +1,6 @@
 {{-- resources/views/professor/simulado/_form.blade.php --}}
 {{-- Variáveis esperadas:
-     $salas    : array de salas disponíveis
+     $materias    : array de materias disponíveis
      $simulado : array|null — preenchido no edit, null no create
 --}}
 
@@ -8,7 +8,7 @@
     $isEdit     = isset($simulado) && !empty($simulado);
     $titulo     = $isEdit ? ($simulado['titulo']      ?? '') : old('titulo',      '');
     $descricao  = $isEdit ? ($simulado['descricao']   ?? '') : old('descricao',   '');
-    $salaId     = $isEdit ? ($simulado['sala_aula_id'] ?? '') : old('sala_aula_id', '');
+    $materiaId  = $isEdit ? ($simulado['materia_id']  ?? '') : old('materia_id',  '');
     $situacao   = $isEdit ? ($simulado['situacao']    ?? 1)  : old('situacao',    1);
     $questoes   = $isEdit ? ($simulado['questoes']    ?? []) : [];
 @endphp
@@ -84,29 +84,29 @@
                     @enderror
                 </div>
 
-                {{-- Sala de Aula --}}
+                {{-- Materia --}}
                 <div class="form-group">
-                    <label class="form-label" for="sala_aula_id">
-                        Sala de Aula <span class="required">*</span>
+                    <label class="form-label" for="materia_id">
+                        Matéria <span class="required">*</span>
                     </label>
                     <select
-                        id="sala_aula_id"
-                        name="sala_aula_id"
-                        class="form-control @error('sala_aula_id') is-invalid @enderror"
+                        id="materia_id"
+                        name="materia_id"
+                        class="form-control @error('materia_id') is-invalid @enderror"
                         required
                     >
-                        <option value="">— Selecione uma sala —</option>
-                        @foreach($salas as $sala)
+                        <option value="">— Selecione uma matéria —</option>
+                        @foreach($materias as $materia)
                             <option
-                                value="{{ $sala['id'] }}"
-                                {{ $salaId == $sala['id'] ? 'selected' : '' }}
+                                value="{{ $materia['idMateria'] }}"
+                                {{ $materiaId == $materia['idMateria'] ? 'selected' : '' }}
                             >
-                                {{ $sala['nome'] }}
-                                @if(!empty($sala['materia']))— {{ $sala['materia'] }}@endif
+                                {{ $materia['nomeMateria'] }}
+                                @if(!empty($materia['descricao']))— {{ $materia['descricao'] }}@endif
                             </option>
                         @endforeach
                     </select>
-                    @error('sala_aula_id')
+                    @error('materia_id')
                         <span class="invalid-feedback">{{ $message }}</span>
                     @enderror
                 </div>
