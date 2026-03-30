@@ -31,7 +31,7 @@ namespace backend_dotnet.Services
                         Titulo = request.Titulo,
                         Descricao = request.Descricao,
                         Situacao = request.Situacao,
-                        IdMateria = (int)request.IdMateria,
+                        IdMateria = request.IdMateria,
                         IdUser = request.IdUser,
                         CreatedAt = DateTime.Now,
                     };
@@ -138,7 +138,7 @@ namespace backend_dotnet.Services
 
                 simuladoDb.Titulo = request.Titulo;
                 simuladoDb.Descricao = request.Descricao;
-                simuladoDb.Situacao = request.Situacao == true;
+                simuladoDb.Situacao = request?.Situacao ?? true;
                 simuladoDb.IdMateria = request.IdMateria;
                 simuladoDb.UpdatedAt = DateTime.Now;
 

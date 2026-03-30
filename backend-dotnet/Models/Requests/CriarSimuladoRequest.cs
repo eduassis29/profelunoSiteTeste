@@ -4,7 +4,7 @@
     {
         public int IdMateria { get; set; }
         public string Titulo { get; set; }
-        public string Descricao { get; set; }
+        public string? Descricao { get; set; }
         public bool Situacao { get; set; }
         public int IdUser { get; set; }
 
