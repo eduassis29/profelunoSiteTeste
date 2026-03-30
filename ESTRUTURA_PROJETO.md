@@ -1,6 +1,6 @@
 # 📁 ESTRUTURA RECOMENDADA DO PROJETO
 
-## Para você (Laravel/PHP)
+## Laravel/PHP
 
 ```
 backend-laravel/
@@ -58,7 +58,7 @@ backend-laravel/
     └── filesystems.php
 ```
 
-## Para seu parceiro (C#/.NET)
+## C#/.NET
 
 ```
 backend-dotnet/
@@ -117,7 +117,7 @@ profeluno/
 
 ## Próximos passos
 
-### 1. Inicializar .NET (seu parceiro)
+### 1. Inicializar .NET
 
 ```bash
 docker-compose exec dotnet bash
@@ -135,7 +135,7 @@ dotnet add package Microsoft.AspNetCore.Cors
 dotnet watch run
 ```
 
-### 2. Configurar Laravel (você)
+### 2. Configurar Laravel
 
 ```bash
 docker-compose exec laravel bash
