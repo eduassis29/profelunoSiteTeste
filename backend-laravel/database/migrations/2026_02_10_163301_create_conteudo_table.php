@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('nome_arquivo')->nullable();
             $table->string('extensao_arquivo')->nullable();
             $table->string('url')->nullable();
+            $table->boolean('situacao')->default(true)->comment('1 = ativo, 0 = inativo');
             $table->timestamps();
         });
     }

@@ -22,7 +22,7 @@ class ConteudoController extends Controller
                 'id'        => 1,
                 'titulo'    => 'Apostila de Equações do 2º Grau',
                 'descricao' => 'Material completo com exercícios resolvidos',
-                'sala'      => 'Aula de Matemática',
+                'materia'   => 'Matemática',
                 'tipo'      => 'pdf',
                 'situacao'  => 1,
                 'criado_em' => '2026-03-20T10:00:00',
@@ -31,7 +31,7 @@ class ConteudoController extends Controller
                 'id'        => 2,
                 'titulo'    => 'Slides — Leis de Newton',
                 'descricao' => 'Apresentação com exemplos do cotidiano',
-                'sala'      => 'Aula de Física',
+                'materia'   => 'Física',
                 'tipo'      => 'slide',
                 'situacao'  => 1,
                 'criado_em' => '2026-03-21T14:30:00',
@@ -40,7 +40,7 @@ class ConteudoController extends Controller
                 'id'        => 3,
                 'titulo'    => 'Videoaula: Segunda Guerra Mundial',
                 'descricao' => 'Resumo em vídeo com linha do tempo interativa',
-                'sala'      => 'Aula de História',
+                'materia'   => 'História',
                 'tipo'      => 'video',
                 'situacao'  => 1,
                 'criado_em' => '2026-03-19T09:00:00',
@@ -49,7 +49,7 @@ class ConteudoController extends Controller
                 'id'        => 4,
                 'titulo'    => 'Simulado — Tabela Periódica',
                 'descricao' => '10 questões de múltipla escolha',
-                'sala'      => 'Aula de Química',
+                'materia'   => 'Química',
                 'tipo'      => 'simulado',
                 'situacao'  => 1,
                 'criado_em' => '2026-03-22T16:00:00',
@@ -58,7 +58,7 @@ class ConteudoController extends Controller
                 'id'        => 5,
                 'titulo'    => 'Exercícios de Análise Sintática',
                 'descricao' => 'Lista de exercícios para fixação',
-                'sala'      => 'Aula de Português',
+                'materia'   => 'Português',
                 'tipo'      => 'document',
                 'situacao'  => 0,
                 'criado_em' => '2026-03-17T11:00:00',
@@ -82,7 +82,34 @@ class ConteudoController extends Controller
     }
 
     public function store() {
+        // $file = $request->file('arquivo'); // UploadedFile
+        // // Conteúdo binário
+        // $binaryContent = file_get_contents($file->getRealPath());
+        // // Nome e tamanho (se quiser salvar em colunas extras)
+        // $filename = $file->getClientOriginalName();
+        // $filesize = $file->getSize();
+
         // Lógica para salvar o conteúdo (futuro: chamada à API .NET)
         return redirect()->route('professor.conteudo.index')->with('success', 'Conteúdo criado com sucesso!');
+    }
+
+    public function edit() {
+        //
+    }
+
+    public function update() {
+        //
+    }
+    
+    public function destroy() {
+        //
+    }
+
+    public function toggle() {
+        //
+    }
+
+    public function download() {
+        //
     }
 }
