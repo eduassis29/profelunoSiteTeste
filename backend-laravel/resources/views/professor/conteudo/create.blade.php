@@ -70,7 +70,7 @@
                                 <option value="">Selecione o tipo...</option>
                                 <option value="pdf"      {{ old('type') === 'pdf'      ? 'selected' : '' }}>📄 PDF</option>
                                 <option value="slide"    {{ old('type') === 'slide'    ? 'selected' : '' }}>🖥️ Slide</option>
-                                <option value="video"    {{ old('type') === 'video'    ? 'selected' : '' }}>🎬 Vídeo</option>
+                                <option value="video"    {{ old('type') === 'video'    ? 'selected' : '' }}>🎬 Link</option>
                                 <option value="document" {{ old('type') === 'document' ? 'selected' : '' }}>📝 Documento</option>
                                 <option value="other"    {{ old('type') === 'other'    ? 'selected' : '' }}>📦 Outro</option>
                             </select>

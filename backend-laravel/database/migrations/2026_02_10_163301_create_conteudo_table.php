@@ -16,9 +16,11 @@ return new class extends Migration
             $table->string('titulo');
             $table->foreignId('user_id')->nullable()->constrained('users');
             $table->text('descricao')->nullable();
-            $table->enum('type', ['pdf', 'slide', 'video', 'document', 'other'])->default('document');
-            $table->string('file_path')->nullable();
-            $table->string('file_url')->nullable();
+            $table->enum('tipo', ['pdf', 'slide', 'document'])->default('null');
+            $table->binary('arquivo')->nullable();
+            $table->string('nome_arquivo')->nullable();
+            $table->string('extensao_arquivo')->nullable();
+            $table->string('url')->nullable();
             $table->timestamps();
         });
     }

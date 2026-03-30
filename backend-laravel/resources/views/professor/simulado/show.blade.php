@@ -329,7 +329,7 @@
     $descricao = $simulado['descricao']         ?? null;
     $situacao  = $simulado['situacao']          ?? 1;
     $criadoEm  = $simulado['createdAt']         ?? null; // ✅ createdAt
-    $materia   = $simulado['materia']           ?? '—';
+    $materia   = $simulado['materia']['nomeMateria']      ?? '—';
     $questoes  = $simulado['simuladoQuestao']   ?? []; // ✅ simuladoQuestao
     $total     = count($questoes);
 

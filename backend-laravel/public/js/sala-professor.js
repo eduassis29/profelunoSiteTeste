@@ -511,4 +511,56 @@ document.addEventListener('DOMContentLoaded', () => {
             updateNavigation(container);
         }
     }
+
+    // ── Controle de campos URL / Upload por tipo ─────────────────
+    const matType      = document.getElementById('mat_type');
+    const urlField     = document.getElementById('mat_file_url');
+    const urlWrapper   = urlField?.closest('.form-group');
+    const dropZone     = document.getElementById('matFileDropZone');
+    const fileInput    = document.getElementById('mat_file');
+    const filePreview  = document.getElementById('matFilePreview');
+    const dropWrapper  = dropZone?.closest('.form-group');
+
+    const tipoConfig = {
+        '':         { url: false, upload: false },
+        'video':    { url: true,  upload: false },  // Link
+        'pdf':      { url: false, upload: true  },
+        'slide':    { url: false, upload: true  },
+        'document': { url: false, upload: true  },
+        'other':    { url: true,  upload: true  },  // Ambos
+    };
+
+    matType.addEventListener('change', handleTipoChange);
+
+    function handleTipoChange() {
+        const config = tipoConfig[matType.value] ?? { url: false, upload: false };
+
+        // ── URL ──────────────────────────────────────────────────
+        if (urlWrapper) {
+            urlWrapper.style.display = config.url ? '' : 'none';
+            if (!config.url) urlField.value = '';
+        }
+
+        // ── Upload ───────────────────────────────────────────────
+        if (dropWrapper) {
+            dropWrapper.style.display = config.upload ? '' : 'none';
+
+            if (!config.upload) {
+                // Limpa o arquivo selecionado
+                fileInput.value = '';
+                filePreview.innerHTML = '';
+                filePreview.classList.add('hidden');
+
+                // Desabilita o input para não enviar no submit
+                fileInput.disabled = true;
+                dropZone.classList.add('disabled');
+            } else {
+                fileInput.disabled = false;
+                dropZone.classList.remove('disabled');
+            }
+        }
+    }
+
+    // Dispara ao carregar para respeitar o old() do Laravel
+    handleTipoChange();
 });

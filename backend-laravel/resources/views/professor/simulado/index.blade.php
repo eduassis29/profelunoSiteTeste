@@ -64,13 +64,14 @@
         <tbody>
             @forelse($simulados as $simulado)
             @php
-                $id        = $simulado['idSimulado']          ?? '—';
-                $titulo    = $simulado['titulo']       ?? '—';
-                $descricao = $simulado['descricao']    ?? null;
-                $materia   = $simulado['idMateria']      ?? '—';
-                $questoes  = $simulado['qtd_questoes'] ?? 0;
-                $situacao  = $simulado['situacao']     ?? 1;
-                $criadoEm  = $simulado['createdAt']    ?? null;
+                $id             = $simulado['idSimulado']          ?? '—';
+                $titulo         = $simulado['titulo']       ?? '—';
+                $descricao      = $simulado['descricao']    ?? null;
+                $idMateria      = $simulado['idMateria']      ?? '—';
+                $nomeMateria    = $simulado['materia']['nomeMateria']      ?? '—';
+                $questoes       = $simulado['qtd_questoes'] ?? 0;
+                $situacao       = $simulado['situacao']     ?? 1;
+                $criadoEm       = $simulado['createdAt']    ?? null;
 
                 // Cor da barra de progresso de questões
                 $barCor = match(true) {
@@ -111,7 +112,7 @@
                     <span class="badge"
                           style="background: rgba(0,207,232,0.1); color: var(--info-color); border: 1px solid rgba(0,207,232,0.25);">
                         <i class="fas fa-book"></i>
-                        {{ $materia }}
+                        {{ $nomeMateria }}
                     </span>
                 </td>
 
@@ -119,13 +120,14 @@
                 <td>
                     <div style="display: flex; align-items: center; gap: 10px; min-width: 100px;">
                         <div style="flex: 1; height: 6px; background: var(--border-color); border-radius: 6px; overflow: hidden;">
-                            <div style="height: 100%; width: {{ min($questoes * 5, 100) }}%; background: {{ $barCor['cor'] }}; border-radius: 6px; transition: width 0.4s;"></div>
+                            <div style="height: 100%; width: {{ min($simulado['quantidadeQuestoes'] * 5, 100) }}%; background: {{ $barCor['cor'] }}; border-radius: 6px; transition: width 0.4s;"></div>
                         </div>
                         <span style="font-size: 13px; font-weight: 700; color: {{ $barCor['cor'] }}; white-space: nowrap;">
-                            {{ $questoes }}
+                            {{ $simulado['quantidadeQuestoes'] }}
                         </span>
                     </div>
                 </td>
+
 
                 {{-- Situação --}}
                 <td>

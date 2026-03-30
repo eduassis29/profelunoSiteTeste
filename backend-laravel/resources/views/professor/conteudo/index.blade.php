@@ -45,10 +45,8 @@
                 <option value="">Todos os tipos</option>
                 <option value="pdf">📄 PDF</option>
                 <option value="slide">🖥️ Slide</option>
-                <option value="video">🎬 Vídeo</option>
+                <option value="Link">🎬 Link</option>
                 <option value="document">📝 Documento</option>
-                <option value="simulado">📋 Simulado</option>
-                <option value="other">📦 Outro</option>
             </select>
             <span class="table-count" id="tableCount">
                 {{ count($conteudos) }} conteúdo(s) encontrado(s)

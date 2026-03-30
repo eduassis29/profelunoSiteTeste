@@ -82,13 +82,13 @@
                     <span>Simulados</span>
                 </a>
             </div>
-            <div class="menu-item">
+            {{-- <div class="menu-item">
                 <a href="{{ route('professor.relatorios') }}"
                    class="menu-link {{ request()->routeIs('professor.relatorios') ? 'active' : '' }}">
                     <i class="fas fa-file-alt"></i>
                     <span>Relatórios</span>
                 </a>
-            </div>
+            </div> --}}
 
         {{-- ── ALUNO ──────────────────────────────────────────── --}}
         @else

@@ -132,7 +132,6 @@ class SimuladoController extends Controller
         $professorId = Auth::id();
         // ── Chamada à API .NET ──────────────────────────────────────────────
         $simulados = $this->apiGet("Simulado/RetornaSimuladosPorUsuario/{$professorId}");
-
         $title    = '<i class="fas fa-list-ol"></i> Simulados';
         $subtitle = 'Gerencie os simulados vinculados às suas salas de aula';
 
@@ -227,7 +226,6 @@ class SimuladoController extends Controller
             'situacao'     => true,
             'simuladoQuestoesRequests'     => $questoes,
         ];
-        // dd($payload);
         // ── Chamada à API .NET ──────────────────────────────────────────────
         // $resultado = $this->apiPost('Simulado/CadastrarSimulado', $payload);
         $resultado = $this->apiPost('Simulado/CadastrarSimulado', [$payload]);
@@ -257,6 +255,7 @@ class SimuladoController extends Controller
                 ->with('error', 'Simulado não encontrado.');
         }
 
+        // dd($simulado);
         $title    = '<i class="fas fa-eye"></i> Ver Simulado';
         $subtitle = $simulado['titulo'] ?? 'Detalhes do simulado';
 

@@ -718,3 +718,8 @@ body {
         flex-direction: column;
     }
 }
+.file-drop-zone.disabled {
+    opacity: 0.4;
+    pointer-events: none;
+    cursor: not-allowed;
+}
