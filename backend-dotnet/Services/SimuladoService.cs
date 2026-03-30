@@ -1,6 +1,7 @@
 ﻿using backend_dotnet.Data;
 using backend_dotnet.Models;
 using backend_dotnet.Models.Requests;
+using backend_dotnet.Models.Responses;
 using backend_dotnet.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -71,9 +72,14 @@ namespace backend_dotnet.Services
             }
         }
 
-        public Task<bool> DeletarSimulado(int idSimulado)
+        public async Task<bool> DeletarSimulado(int idSimulado)
         {
-            throw new NotImplementedException();
+            int linhasAfetadas = await _context.Simulados
+                .Where(x => x.IdSimulado == idSimulado)
+                .Include(x => x.SimuladoQuestao)
+                .ExecuteDeleteAsync();
+
+            return true;
         }
         public async Task<IEnumerable<Simulado>> RetornaTodosSimuladosAsync()
         {
@@ -94,14 +100,104 @@ namespace backend_dotnet.Services
             return await _context.SimuladoQuestoes.Where(x => x.IdSimulado == idSimulado).ToListAsync();
         }
 
-        public async Task<IEnumerable<Simulado>> RetornaSimuladosPorUsuarioAsync(int idUsuario)
+        public async Task<IEnumerable<SimuladoUsuarioResponse>> RetornaSimuladosPorUsuarioAsync(int idUsuario)
         {
-            return await _context.Simulados.Where(x => x.IdUser == idUsuario).Include(x => x.SimuladoQuestao).ToListAsync();
+            var simulados = await _context.Simulados
+                .Where(x => x.IdUser == idUsuario)
+                .Include(x => x.SimuladoQuestao)
+                .AsNoTracking()
+                .ToListAsync();
+
+            var response = simulados.Select(s => new SimuladoUsuarioResponse
+            {
+                IdSimulado = s.IdSimulado,
+                Titulo = s.Titulo,
+                Descricao = s.Descricao,
+                Situacao = s.Situacao, 
+                IdMateria = s.IdMateria,
+                IdUser = s.IdUser,
+                CreatedAt = s.CreatedAt,
+                UpdatedAt = s.UpdatedAt,
+                QuantidadeQuestoes = s.SimuladoQuestao?.Count ?? 0
+            }).ToList();
+
+            return response;
         }
 
-        public Task<Simulado> AtualizaSimuladoAsync(AtualizarSimuladoRequest simulado)
+        public async Task<bool> AtualizaSimuladoAsync(AtualizarSimuladoRequest request)
         {
-            throw new NotImplementedException();
+            using var transaction = await _context.Database.BeginTransactionAsync();
+
+            try
+            {
+                var simuladoDb = await _context.Simulados
+                    .Include(x => x.SimuladoQuestao)
+                    .FirstOrDefaultAsync(x => x.IdSimulado == request.IdSimulado);
+
+                if(simuladoDb == null) return false;
+
+                simuladoDb.Titulo = request.Titulo;
+                simuladoDb.Descricao = request.Descricao;
+                simuladoDb.Situacao = request.Situacao == true;
+                simuladoDb.IdMateria = request.IdMateria;
+                simuladoDb.UpdatedAt = DateTime.Now;
+
+
+                var idsNoRequest = request.SimuladoQuestoesRequests.Select(q => q.IdSimuladoQuestao).ToList();
+                var questoesParaRemover = simuladoDb.SimuladoQuestao
+                    .Where(q => !idsNoRequest.Contains(q.IdSimuladoQuestao))
+                    .ToList();
+
+                foreach(var qRemover in questoesParaRemover)
+                {
+                    _context.SimuladoQuestoes.Remove(qRemover);
+                }
+
+                foreach(var qReq in request.SimuladoQuestoesRequests)
+                {
+                    var questaoExistente = simuladoDb.SimuladoQuestao
+                        .FirstOrDefault(q => q.IdSimuladoQuestao == qReq.IdSimuladoQuestao && q.IdSimuladoQuestao != 0);
+
+                    if(questaoExistente != null)
+                    {
+                        questaoExistente.Enunciado = qReq.Enunciado;
+                        questaoExistente.Ordem = qReq.Ordem;
+                        questaoExistente.QuestaoCorreta = qReq.QuestaoCorreta;
+                        questaoExistente.QuestaoA = qReq.QuestaoA;
+                        questaoExistente.QuestaoB = qReq.QuestaoB;
+                        questaoExistente.QuestaoC = qReq.QuestaoC;
+                        questaoExistente.QuestaoD = qReq.QuestaoD;
+                        questaoExistente.QuestaoE = qReq.QuestaoE;
+                        questaoExistente.UpdatedAt = DateTime.Now;
+                    }
+                    else
+                    {
+                        var novaQuestao = new SimuladoQuestao
+                        {
+                            IdSimulado = simuladoDb.IdSimulado,
+                            Enunciado = qReq.Enunciado,
+                            Ordem = qReq.Ordem,
+                            QuestaoCorreta = qReq.QuestaoCorreta,
+                            QuestaoA = qReq.QuestaoA,
+                            QuestaoB = qReq.QuestaoB,
+                            QuestaoC = qReq.QuestaoC,
+                            QuestaoD = qReq.QuestaoD,
+                            QuestaoE = qReq.QuestaoE,
+                            CreatedAt = DateTime.Now
+                        };
+                        _context.SimuladoQuestoes.Add(novaQuestao);
+                    }
+                }
+
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+                return true;
+            }
+            catch(Exception)
+            {
+                await transaction.RollbackAsync();
+                return false;
+            }
         }
     }
 }

@@ -62,5 +62,21 @@ namespace backend_dotnet.Controllers
             if(result != null) return Ok(result);
             return NotFound("Nenhum simulado encontrado para o usuário informado.");
         }
+
+        [HttpDelete("DeletarSimulado/{idSimulado}")]
+        public async Task<IActionResult> DeletarSimuladoAsync(int idSimulado)
+        {
+            var result = await _simuladoService.DeletarSimulado(idSimulado);
+            if(result) return Ok("Simulado deletado com sucesso!");
+            return NotFound("Simulado não encontrado para exclusão.");
+        }
+
+        [HttpPut("AtualizarSimulado")]
+        public async Task<IActionResult> AtualizarSimuladoAsync([FromBody] AtualizarSimuladoRequest request)
+        {
+            var result = await _simuladoService.AtualizaSimuladoAsync(request);
+            if(result) return Ok("Simulado atualizado com sucesso!");
+            return BadRequest("Erro ao atualizar o simulado. Verifique os dados informados.");
+        }
     }
 }

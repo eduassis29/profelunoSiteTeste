@@ -1,5 +1,6 @@
 ﻿using backend_dotnet.Models;
 using backend_dotnet.Models.Requests;
+using backend_dotnet.Models.Responses;
 
 namespace backend_dotnet.Services.Interfaces
 {
@@ -10,6 +11,8 @@ namespace backend_dotnet.Services.Interfaces
         public Task<Simulado> RetornaSimuladoPorIdAsync(int idSimulado, int idUsuario);
         public Task<IEnumerable<Simulado>> RetornaSimuladosPorMateriaAsync(int idMateria, int idUsuario);
         public Task<IEnumerable<SimuladoQuestao>> RetornaSimuladoQuestoesPorIdSimulado(int idSimulado);
-        public Task<IEnumerable<Simulado>> RetornaSimuladosPorUsuarioAsync(int idUsuario);
+        public Task<IEnumerable<SimuladoUsuarioResponse>> RetornaSimuladosPorUsuarioAsync(int idUsuario);
+        public Task<bool> DeletarSimulado(int idSimulado);
+        public Task<bool> AtualizaSimuladoAsync(AtualizarSimuladoRequest request);
     }
 }
