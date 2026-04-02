@@ -121,55 +121,8 @@ class ConteudoController extends Controller
     public function index()
     {
         $professorId = Auth::id();
-        $conteudos = $this->apiGet("Conteudo/RetornaConteudoPorUsuario/{$professorId}");
-        // ── Dados fictícios (substituir por chamada à API .NET futuramente) ──
-        // $conteudos = [
-        //     [
-        //         'id'        => 1,
-        //         'titulo'    => 'Apostila de Equações do 2º Grau',
-        //         'descricao' => 'Material completo com exercícios resolvidos',
-        //         'materia'   => 'Matemática',
-        //         'tipo'      => 'pdf',
-        //         'situacao'  => 1,
-        //         'criado_em' => '2026-03-20T10:00:00',
-        //     ],
-        //     [
-        //         'id'        => 2,
-        //         'titulo'    => 'Slides — Leis de Newton',
-        //         'descricao' => 'Apresentação com exemplos do cotidiano',
-        //         'materia'   => 'Física',
-        //         'tipo'      => 'slide',
-        //         'situacao'  => 1,
-        //         'criado_em' => '2026-03-21T14:30:00',
-        //     ],
-        //     [
-        //         'id'        => 3,
-        //         'titulo'    => 'Videoaula: Segunda Guerra Mundial',
-        //         'descricao' => 'Resumo em vídeo com linha do tempo interativa',
-        //         'materia'   => 'História',
-        //         'tipo'      => 'video',
-        //         'situacao'  => 1,
-        //         'criado_em' => '2026-03-19T09:00:00',
-        //     ],
-        //     [
-        //         'id'        => 4,
-        //         'titulo'    => 'Simulado — Tabela Periódica',
-        //         'descricao' => '10 questões de múltipla escolha',
-        //         'materia'   => 'Química',
-        //         'tipo'      => 'simulado',
-        //         'situacao'  => 1,
-        //         'criado_em' => '2026-03-22T16:00:00',
-        //     ],
-        //     [
-        //         'id'        => 5,
-        //         'titulo'    => 'Exercícios de Análise Sintática',
-        //         'descricao' => 'Lista de exercícios para fixação',
-        //         'materia'   => 'Português',
-        //         'tipo'      => 'document',
-        //         'situacao'  => 0,
-        //         'criado_em' => '2026-03-17T11:00:00',
-        //     ],
-        // ];
+        $conteudos = $this->apiGet("Conteudo/ListarConteudos");
+       
         $conteudos = $conteudos ?? [];
 
         $title = '<i class="fas fa-folder-open"></i> Conteúdos';
@@ -192,6 +145,13 @@ class ConteudoController extends Controller
 
     public function store(Request $request)
     {
+        Log::info('Conteudo store called', [
+            'user_id' => Auth::id(),
+            'user_cargo' => session('user_cargo'),
+            'request_all' => $request->all(),
+            'files' => $request->hasFile('file_path') ? 'yes' : 'no',
+        ]);
+
         $request->validate([
             'titulo'      => 'required|string|max:255',
             'descricao'   => 'nullable|string',
@@ -220,10 +180,13 @@ class ConteudoController extends Controller
             'file_path.mimes'      => 'Formato de arquivo não permitido.',
         ]);
 
+        Log::info('Validation passed');
+
         $professorId = Auth::id();
         $tipo        = $request->input('type');
         $fileUrl     = $request->input('file_url', '');
 
+        // dd($request->all());
         // ── Com arquivo físico → multipart/form-data ──────────────────────────
         if ($request->hasFile('file_path') && $request->file('file_path')->isValid()) {
             $arquivo  = $request->file('file_path');
@@ -239,16 +202,16 @@ class ConteudoController extends Controller
                         $arquivo->getClientOriginalName()
                     )
                     ->post("{$this->baseUrl}/v1/Conteudo/CadastrarConteudo", [
-                        'Titulo'           => $request->input('titulo'),
-                        'IdUsuario'        => $professorId,
-                        'Descricao'        => $request->input('descricao', ''),
-                        'IdMateria'        => $request->input('materia_id'),
-                        'Tipo'             => $tipo,
-                        'Situacao'         => $request->boolean('situacao', true),
-                        'NomeArquivo'      => $nomeOrig,
-                        'ExtensaoArquivo'  => $extensao,
-                        'Url'              => $fileUrl,
-                    ]);
+                    'Titulo'           => $request->input('titulo'),
+                    'IdUsuario'        => $professorId,
+                    'Descricao'        => $request->input('descricao', ''),
+                    'IdMateria'        => (int) $request->input('materia_id'),
+                    'Tipo'             => strtolower($tipo),
+                    'Situacao'         => $request->boolean('situacao', true) ? 'true' : 'false',
+                    'NomeArquivo'      => $nomeOrig,
+                    'ExtensaoArquivo'  => $extensao,
+                    'Url'              => $fileUrl,
+                ]);
 
             } catch (\Exception $e) {
                 Log::error('[ConteudoController] store() multipart falhou: ' . $e->getMessage());
@@ -270,7 +233,7 @@ class ConteudoController extends Controller
                 'IdUsuario'        => $professorId,
                 'Descricao'        => $request->input('descricao', ''),
                 'IdMateria'        => $request->input('materia_id'),
-                'Tipo'             => $tipo,
+                'Tipo'             => strtolower($tipo),
                 'Situacao'         => $request->boolean('situacao', true),
                 'NomeArquivo'      => '',
                 'ExtensaoArquivo'  => '',
@@ -358,7 +321,7 @@ class ConteudoController extends Controller
                         'IdUsuario'        => $professorId,
                         'Descricao'        => $request->input('descricao', ''),
                         'IdMateria'        => $request->input('materia_id'),
-                        'Tipo'             => $tipo,
+                        'Tipo'             => strtolower($tipo),
                         'Situacao'         => $request->boolean('situacao', true),
                         'NomeArquivo'      => $nomeOrig,
                         'ExtensaoArquivo'  => $extensao,

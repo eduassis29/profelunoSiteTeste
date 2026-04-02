@@ -50,6 +50,7 @@ class AuthController extends Controller
                         'user_email' => $user->email,
                         'user_cargo' => strtolower($user->cargo?->nome_cargo ?? 'aluno'),
                         'cargo_id'   => $user->cargo_id,
+                        'api_token'  => $data['autorizacao'],
                     ]);
 
                     $role = session('user_cargo');

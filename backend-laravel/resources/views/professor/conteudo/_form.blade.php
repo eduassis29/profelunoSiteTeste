@@ -278,6 +278,12 @@
             </div>
             @endif
 
+            @if(session('error'))
+            <div class="alert alert-danger" style="margin-top: 16px;">
+                {{ session('error') }}
+            </div>
+            @endif
+
             <div class="form-actions">
                 <a href="{{ route('professor.conteudo.index') }}" class="btn-form-cancel">
                     <i class="fas fa-times"></i> Cancelar

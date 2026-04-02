@@ -55,7 +55,7 @@
             <tr>
                 <th>#</th>
                 <th>Título</th>
-                <th>Sala de Aula</th>
+                <th>Matéria</th>
                 <th>Tipo</th>
                 <th>Situação</th>
                 <th>Criado em</th>
@@ -65,32 +65,29 @@
         <tbody>
             @forelse($conteudos as $conteudo)
             @php
-                $id        = $conteudo['id']        ?? '—';
-                $titulo    = $conteudo['titulo']     ?? '—';
-                $sala      = $conteudo['sala']       ?? '—';
-                $tipo      = $conteudo['tipo']       ?? 'other';
-                $situacao  = $conteudo['situacao']   ?? 1;
-                $criadoEm  = $conteudo['criado_em']  ?? null;
-                $fileUrl   = $conteudo['file_url']   ?? null;
-                $filePath  = $conteudo['file_path']  ?? null;
+                $id              = $conteudo['idConteudo']             ?? '—';
+                $titulo          = $conteudo['titulo']                 ?? '—';
+                $nomeMateria     = $conteudo['materia']['nomeMateria'] ?? '—';
+                $tipo            = $conteudo['tipo']                   ?? 'other';
+                $situacao        = $conteudo['situacao']               ?? true;
+                $criadoEm        = $conteudo['createdAt']              ?? null;
+                $fileUrl         = $conteudo['url']                    ?? null;   // ← campo correto da API
+                $nomeArquivo     = $conteudo['nomeArquivo']            ?? null;   // ← usado para saber se tem arquivo
 
                 $tipoIcones = [
                     'pdf'      => ['icon' => 'fa-file-pdf',  'cor' => '#ea5455', 'bg' => 'rgba(234,84,85,0.12)',    'label' => 'PDF'],
                     'slide'    => ['icon' => 'fa-desktop',   'cor' => '#ff9f43', 'bg' => 'rgba(255,159,67,0.12)',   'label' => 'Slide'],
                     'Link'     => ['icon' => 'fa-film',      'cor' => '#00cfe8', 'bg' => 'rgba(0,207,232,0.12)',    'label' => 'Link'],
                     'document' => ['icon' => 'fa-file-word', 'cor' => '#7367f0', 'bg' => 'rgba(115,103,240,0.12)', 'label' => 'Documento'],
-                    'simulado' => ['icon' => 'fa-list-ol',   'cor' => '#28c76f', 'bg' => 'rgba(40,199,111,0.12)',  'label' => 'Simulado'],
                     'other'    => ['icon' => 'fa-file',      'cor' => '#82868b', 'bg' => 'rgba(130,134,139,0.12)', 'label' => 'Outro'],
                 ];
 
                 $info = $tipoIcones[$tipo] ?? $tipoIcones['other'];
 
-                // Botões de ação rápida:
-                // - Link  → somente "Abrir"    (file_url)
-                // - PDF / Slide / Document → somente "Baixar" (file_path)
-                // - Outro → pode ter ambos, exibe o que existir
-                $hasLink = !empty($fileUrl)  && in_array($tipo, ['Link', 'other']);
-                $hasFile = !empty($filePath) && in_array($tipo, ['pdf', 'slide', 'document', 'other']);
+                // Link  → botão "Abrir"  (usa campo url da API)
+                // Arquivo → botão "Baixar" (usa nomeArquivo para confirmar que existe arquivo)
+                $hasLink = !empty($fileUrl)     && $tipo === 'Link';
+                $hasFile = !empty($nomeArquivo) && in_array($tipo, ['pdf', 'slide', 'document']);
             @endphp
             <tr data-tipo="{{ $tipo }}">
                 <td>{{ $id }}</td>
@@ -113,10 +110,11 @@
                 </td>
 
                 <td>
-                    <div style="display: flex; align-items: center; gap: 8px;">
-                        <i class="fas fa-chalkboard-teacher" style="color: var(--primary-color); font-size: 13px;"></i>
-                        <span>{{ $sala }}</span>
-                    </div>
+                    <span class="badge"
+                          style="background: rgba(0,207,232,0.1); color: var(--info-color); border: 1px solid rgba(0,207,232,0.25);">
+                        <i class="fas fa-book"></i>
+                        {{ $nomeMateria }}
+                    </span>
                 </td>
 
                 <td>
