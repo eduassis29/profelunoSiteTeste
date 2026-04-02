@@ -385,7 +385,7 @@ class ConteudoController extends Controller
                 'IdUsuario'        => $professorId,
                 'Descricao'        => $request->input('descricao', ''),
                 'IdMateria'        => $request->input('materia_id'),
-                'Tipo'             => $tipo,
+                'Tipo'             => strtolower($tipo),
                 'Situacao'         => $request->boolean('situacao', true),
                 'NomeArquivo'      => '',
                 'ExtensaoArquivo'  => '',
