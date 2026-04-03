@@ -42,25 +42,29 @@ namespace backend_dotnet.Services
         public async Task<ConteudoResponse> RetornaConteudoPorIdProfessor(int idUsuario)
         {
             var response = _context.Conteudos.Include(x => x.Materia).FirstOrDefaultAsync(x => x.IdUsuario == idUsuario);
-
-            ConteudoResponse newConteudo = new ConteudoResponse()
+            
+            if(response.Result != null)
             {
-                IdConteudo = response.Result.IdConteudo,
-                Titulo = response.Result.Titulo,
-                Descricao = response.Result.Descricao,
-                IdUsuario = response.Result.IdUsuario,
-                IdMateria = response.Result.IdMateria,
-                Tipo = response.Result.Tipo,
-                Situacao = response.Result.Situacao,
-                NomeArquivo = response.Result.NomeArquivo,
-                ExtensaoArquivo = response.Result.ExtensaoArquivo,
-                Url = response.Result.Url,
-                CreatedAt = response.Result.CreatedAt,
-                UpdatedAt = response.Result.UpdatedAt,
-                Materia = response.Result.Materia
-            };
+                ConteudoResponse newConteudo = new ConteudoResponse()
+                {
+                    IdConteudo = response.Result.IdConteudo,
+                    Titulo = response.Result.Titulo,
+                    Descricao = response.Result.Descricao,
+                    IdUsuario = response.Result.IdUsuario,
+                    IdMateria = response.Result.IdMateria,
+                    Tipo = response.Result.Tipo,
+                    Situacao = response.Result.Situacao,
+                    NomeArquivo = response.Result.NomeArquivo,
+                    ExtensaoArquivo = response.Result.ExtensaoArquivo,
+                    Url = response.Result.Url,
+                    CreatedAt = response.Result.CreatedAt,
+                    UpdatedAt = response.Result.UpdatedAt,
+                    Materia = response.Result.Materia
+                };
 
-            return newConteudo;
+                return newConteudo;
+            }
+            return null;
         }
 
         public async Task<ConteudoResponse> RetornaConteudoPorIdConteudo(int idConteudo)
@@ -104,12 +108,11 @@ namespace backend_dotnet.Services
             // Validar se a matéria existe
             var materiaExiste = await _context.Materias.AnyAsync(m => m.IdMateria == conteudo.IdMateria);
             if (!materiaExiste)
-            {
                 throw new Exception("Matéria não encontrada.");
-            }
 
-            using var ms = new MemoryStream();
-            await conteudo.Arquivo.CopyToAsync(ms);
+                using var ms = new MemoryStream();
+            if(conteudo.Arquivo != null)
+                await conteudo.Arquivo.CopyToAsync(ms);
 
             var entidade = new Conteudo
             {
@@ -168,9 +171,9 @@ namespace backend_dotnet.Services
             return true;
         }
 
-        public async Task<bool> DeleteConteudo(int id)
+        public async Task<bool> DeleteConteudo(int idConteudo)
         {
-            var entidade = await _context.Conteudos.FindAsync(id);
+            var entidade = await _context.Conteudos.FindAsync(idConteudo);
             if (entidade == null) return false;
 
             _context.Conteudos.Remove(entidade);

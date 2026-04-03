@@ -2,9 +2,9 @@
 
 public partial class Conteudo
 {
-    public long IdConteudo{ get; set; }
+    public int IdConteudo{ get; set; }
     public string Titulo { get; set; } = null!;
-    public long? IdUsuario { get; set; }
+    public int? IdUsuario { get; set; }
     public int IdMateria { get; set; }
     public string? Descricao { get; set; }
     public string Tipo { get; set; } = null!;

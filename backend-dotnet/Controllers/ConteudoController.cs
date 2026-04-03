@@ -1,6 +1,8 @@
-﻿using backend_dotnet.Services.Interfaces;
-using Microsoft.AspNetCore.Mvc;
+﻿using backend_dotnet.Models;
 using backend_dotnet.Models.Requests;
+using backend_dotnet.Services.Interfaces;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 
 namespace backend_dotnet.Controllers
 {
@@ -41,6 +43,7 @@ namespace backend_dotnet.Controllers
         public async Task<IActionResult> ListarConteudosPorIdProfessorAsync(int idProfessor)
         {
             var conteudos = await _conteudoService.RetornaConteudoPorIdProfessor(idProfessor);
+            if(conteudos == null) return NotFound("Não foram encontrados conteudos desse professor");
             return Ok(conteudos);
         }
 
@@ -71,6 +74,36 @@ namespace backend_dotnet.Controllers
             string contentType = "application/octet-stream";
 
             return File(conteudo.Arquivo, contentType, conteudo.NomeArquivo + conteudo.ExtensaoArquivo);
+        }
+
+        [HttpPut("AtualizarConteudo")]
+        public async Task<IActionResult> AtualizarConteudo(AtualizarConteudoRequest conteudo)
+        {
+            try
+            {
+                var result = await _conteudoService.UpdateConteudo(conteudo);
+                if(result) return Ok("Conteúdo atualizado com sucesso!");
+                return BadRequest("Erro ao atualizar conteúdo.");
+            }
+            catch(Exception ex)
+            {
+                return BadRequest($"Erro: {ex.Message}");
+            }
+        }
+
+        [HttpDelete("DeletarConteudo/{idConteudo}")]
+        public async Task<IActionResult> DeletarConteudo(int idConteudo)
+        {
+            try
+            {
+                var result = await _conteudoService.DeleteConteudo(idConteudo);
+                if(result) return Ok("Conteúdo excluído com sucesso!");
+                return BadRequest("Erro ao excluir conteúdo.");
+            }
+            catch(Exception ex)
+            {
+                return BadRequest($"Erro: {ex.Message}");
+            }
         }
     }
 }

@@ -13,6 +13,6 @@ namespace backend_dotnet.Services.Interfaces
         public Task<ArquivoResponse> RetornaDadosArquivo(int idConteudo);
         public Task<Conteudo> DownloadArquivoConteudo(int idConteudo);
         public Task<bool> UpdateConteudo(AtualizarConteudoRequest conteudo);
-        public Task<bool> DeleteConteudo(int id);
+        public Task<bool> DeleteConteudo(int idConteudo);
     }
 }
