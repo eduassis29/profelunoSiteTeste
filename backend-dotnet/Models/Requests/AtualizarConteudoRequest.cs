@@ -5,7 +5,7 @@
         public int IdConteudo { get; set; }
         public string Titulo { get; set; }
         public int IdUsuario { get; set; }
-        public string Descricao { get; set; }
+        public string? Descricao { get; set; }
         public int IdMateria { get; set; }
         public string Tipo { get; set; }
         public bool Situacao { get; set; }

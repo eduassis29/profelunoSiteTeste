@@ -2,14 +2,14 @@
 
 public partial class SalaAula
 {
-    public long IdSalaAula { get; set; }
+    public int IdSalaAula { get; set; }
     public string Titulo { get; set; } = null!;
     public string? Descricao { get; set; }
-    public long? ProfessorId { get; set; }
+    public int? IdProfessor { get; set; }
     public DateTime? DataHoraInicio { get; set; }
     public DateTime? DataHoraFim { get; set; }
     public string Materia { get; set; } = null!;
-    public long? MaterialId { get; set; }
+    public int? IdMaterial { get; set; }
     public int QtdAlunos { get; set; }
     public string Url { get; set; } = null!;
     public double Avaliacao { get; set; }

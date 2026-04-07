@@ -51,21 +51,28 @@ class ConteudoController extends Controller
     private function apiPostQuery(string $endpoint, array $data): ?array
     {
         try {
-            $url      = "{$this->baseUrl}/v1/{$endpoint}?" . http_build_query($data);
-            $response = Http::withHeaders($this->authHeaders())->timeout(15)->send('POST', $url);
+            // 1. A URL agora é limpa, sem a query string
+            $url = "{$this->baseUrl}/v1/{$endpoint}";
+
+            // 2. Usamos asForm() para simular um envio de formulário (compatível com [FromForm])
+            $response = Http::withHeaders($this->authHeaders())
+                ->asForm() 
+                ->timeout(15)
+                ->post($url, $data); // Passamos o $data como corpo do POST
 
             if ($response->successful()) {
                 $json = $response->json();
                 return is_array($json) ? $json : [];
             }
 
-            Log::warning("[ConteudoController] POST(query) {$endpoint} retornou {$response->status()}", [
+            Log::warning("[ConteudoController] POST(form) {$endpoint} retornou {$response->status()}", [
                 'url'  => $url,
                 'body' => $response->body(),
             ]);
             return null;
+
         } catch (\Exception $e) {
-            Log::error("[ConteudoController] POST(query) {$endpoint} falhou: " . $e->getMessage());
+            Log::error("[ConteudoController] POST(form) {$endpoint} falhou: " . $e->getMessage());
             return null;
         }
     }
@@ -210,6 +217,8 @@ class ConteudoController extends Controller
                 ]);
                 return back()->withInput()->with('error', $response->json('message') ?? 'Erro ao cadastrar conteúdo.');
             }
+
+            /* Mandar o arquivo no QueryParameters */
 
         // ── Sem arquivo (link) → query string ──────────────────────────────
         } else {
