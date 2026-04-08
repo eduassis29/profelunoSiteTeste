@@ -10,14 +10,6 @@
 @section('content')
 
 <div class="page-header">
-    <div class="page-header-left">
-        <a href="{{ route('professor.salas.index') }}" class="back-link">
-            <i class="fas fa-arrow-left"></i>
-            Voltar
-        </a>
-        <h1 class="page-title">Nova Sala de Aula</h1>
-        <p class="page-subtitle">Preencha os dados para criar uma nova sala</p>
-    </div>
     <div class="page-header-right">
         <div class="steps-indicator">
             <div class="step active" data-step="1">
@@ -27,7 +19,7 @@
             <div class="step-line"></div>
             <div class="step" data-step="2">
                 <span class="step-num">2</span>
-                <span class="step-label">Material</span>
+                <span class="step-label">Conteúdo</span>
             </div>
             <div class="step-line"></div>
             <div class="step" data-step="3">
@@ -38,29 +30,35 @@
     </div>
 </div>
 
-@if(session('error'))
-<div class="alert alert-danger">
-    <i class="fas fa-exclamation-circle"></i>
-    {{ session('error') }}
-</div>
+{{-- Erros globais da API --}}
+@if($errors->has('api'))
+    <div class="alert alert-danger">
+        <i class="fas fa-exclamation-circle"></i>
+        {{ $errors->first('api') }}
+    </div>
 @endif
 
-@if($errors->any())
-<div class="alert alert-danger">
-    <ul style="margin:0; padding-left: 18px;">
-        @foreach($errors->all() as $error)
-            <li>{{ $error }}</li>
-        @endforeach
-    </ul>
-</div>
+@if(session('warning'))
+    <div class="alert alert-warning">
+        <i class="fas fa-exclamation-triangle"></i>
+        {{ session('warning') }}
+    </div>
 @endif
 
-<form action="{{ route('professor.salas.store') }}" method="POST" enctype="multipart/form-data" id="formCriarSala">
+<form
+    action="{{ route('professor.salas.store') }}"
+    method="POST"
+    id="formCriarSala"
+>
     @csrf
 
+    {{-- ============================================================
+         STEP 1 — Informações da Sala
+         ============================================================ --}}
     <div class="form-step active" id="step-1">
         <div class="form-grid-two">
 
+            {{-- Coluna principal --}}
             <div class="form-col-main">
                 <div class="form-card">
                     <div class="form-card-header">
@@ -69,6 +67,7 @@
                     </div>
                     <div class="form-card-body">
 
+                        {{-- Título --}}
                         <div class="form-group">
                             <label for="titulo" class="form-label">
                                 Título da Sala <span class="required">*</span>
@@ -80,15 +79,18 @@
                                 class="form-control @error('titulo') is-invalid @enderror"
                                 placeholder="Ex: Álgebra Linear — Turma A"
                                 value="{{ old('titulo') }}"
-                                maxlength="150"
+                                maxlength="255"
                                 required
                             >
-                            <span class="char-count"><span id="tituloCount">0</span>/150</span>
+                            <span class="char-count">
+                                <span id="tituloCount">{{ strlen(old('titulo', '')) }}</span>/255
+                            </span>
                             @error('titulo')
                                 <span class="error-message">{{ $message }}</span>
                             @enderror
                         </div>
 
+                        {{-- Descrição --}}
                         <div class="form-group">
                             <label for="descricao" class="form-label">Descrição</label>
                             <textarea
@@ -103,26 +105,29 @@
                             @enderror
                         </div>
 
+                        {{-- Matéria + Max Alunos --}}
                         <div class="form-row-two">
                             <div class="form-group">
-                                <label for="materia" class="form-label">
+                                <label for="materia_id" class="form-label">
                                     Matéria <span class="required">*</span>
                                 </label>
                                 <select
-                                    id="materia"
+                                    id="materia_id"
                                     name="materia_id"
-                                    class="form-control @error('materia_id') is-invalid @enderror"
+                                    class="form-control filter-select @error('materia_id') is-invalid @enderror"
                                     required
                                 >
-                                    <option value="">— Selecione uma matéria —</option>
-                                    @foreach($materias as $materia)
+                                    <option value="">Selecione a matéria</option>
+                                    @forelse($materias as $materia)
                                         <option
-                                            value="{{ $materia['idMateria'] ?? $materia['id'] ?? '' }}"
-                                            {{ old('materia_id') == ($materia['idMateria'] ?? $materia['id'] ?? '') ? 'selected' : '' }}
+                                            value="{{ $materia['idMateria'] }}"
+                                            {{ old('materia_id') == $materia['idMateria'] ? 'selected' : '' }}
                                         >
-                                            {{ $materia['nomeMateria'] ?? $materia['nome'] ?? 'Sem nome' }}
+                                            {{ $materia['nomeMateria'] }}
                                         </option>
-                                    @endforeach
+                                    @empty
+                                        <option value="" disabled>Nenhuma matéria disponível</option>
+                                    @endforelse
                                 </select>
                                 @error('materia_id')
                                     <span class="error-message">{{ $message }}</span>
@@ -130,16 +135,16 @@
                             </div>
 
                             <div class="form-group">
-                                <label for="qtd_alunos" class="form-label">
-                                    Qtd. Máx. de Alunos <span class="required">*</span>
+                                <label for="max_alunos" class="form-label">
+                                    Máx. de Alunos <span class="required">*</span>
                                 </label>
                                 <input
                                     type="number"
-                                    id="qtd_alunos"
+                                    id="max_alunos"
                                     name="max_alunos"
                                     class="form-control @error('max_alunos') is-invalid @enderror"
                                     placeholder="Ex: 30"
-                                    value="{{ old('max_alunos') }}"
+                                    value="{{ old('max_alunos', 30) }}"
                                     min="1"
                                     max="500"
                                     required
@@ -150,6 +155,7 @@
                             </div>
                         </div>
 
+                        {{-- Data/hora início + fim --}}
                         <div class="form-row-two">
                             <div class="form-group">
                                 <label for="data_hora_inicio" class="form-label">
@@ -184,10 +190,12 @@
                             </div>
                         </div>
 
+                        {{-- URL externa + Status --}}
                         <div class="form-row-two">
                             <div class="form-group">
                                 <label for="url" class="form-label">
-                                    URL / Link da Aula <span class="required">*</span>
+                                    Link Externo
+                                    <span class="optional-tag">Opcional</span>
                                 </label>
                                 <div class="input-with-icon">
                                     <i class="fas fa-link"></i>
@@ -198,9 +206,12 @@
                                         class="form-control @error('url') is-invalid @enderror"
                                         placeholder="https://meet.google.com/..."
                                         value="{{ old('url') }}"
-                                        required
                                     >
                                 </div>
+                                <span class="field-hint">
+                                    <i class="fas fa-info-circle"></i>
+                                    Se vazio, será usada a sala Jitsi gerada automaticamente.
+                                </span>
                                 @error('url')
                                     <span class="error-message">{{ $message }}</span>
                                 @enderror
@@ -208,8 +219,12 @@
 
                             <div class="form-group">
                                 <label for="status" class="form-label">Status Inicial</label>
-                                <select id="status" name="status" class="form-control filter-select @error('status') is-invalid @enderror">
-                                    <option value="pending" {{ old('status') === 'pending' ? 'selected' : '' }}>
+                                <select
+                                    id="status"
+                                    name="status"
+                                    class="form-control filter-select @error('status') is-invalid @enderror"
+                                >
+                                    <option value="pending" {{ old('status', 'pending') === 'pending' ? 'selected' : '' }}>
                                         Agendada (Pendente)
                                     </option>
                                     <option value="active" {{ old('status') === 'active' ? 'selected' : '' }}>
@@ -222,48 +237,11 @@
                             </div>
                         </div>
 
-                        <div class="form-row-two">
-                            <div class="form-group">
-                                <label for="conteudo_id" class="form-label">Conteúdo associado</label>
-                                <select id="conteudo_id" name="conteudo_id" class="form-control filter-select @error('conteudo_id') is-invalid @enderror">
-                                    <option value="">Nenhum conteúdo</option>
-                                    @foreach($conteudos as $conteudo)
-                                        <option
-                                            value="{{ $conteudo['idConteudo'] ?? $conteudo['id'] ?? '' }}"
-                                            {{ old('conteudo_id') == ($conteudo['idConteudo'] ?? $conteudo['id'] ?? '') ? 'selected' : '' }}
-                                        >
-                                            {{ $conteudo['titulo'] ?? 'Conteúdo sem título' }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                                @error('conteudo_id')
-                                    <span class="error-message">{{ $message }}</span>
-                                @enderror
-                            </div>
-
-                            <div class="form-group">
-                                <label for="simulado_id" class="form-label">Simulado associado</label>
-                                <select id="simulado_id" name="simulado_id" class="form-control filter-select @error('simulado_id') is-invalid @enderror">
-                                    <option value="">Nenhum simulado</option>
-                                    @foreach($simulados as $simulado)
-                                        <option
-                                            value="{{ $simulado['idSimulado'] ?? $simulado['id'] ?? '' }}"
-                                            {{ old('simulado_id') == ($simulado['idSimulado'] ?? $simulado['id'] ?? '') ? 'selected' : '' }}
-                                        >
-                                            {{ $simulado['titulo'] ?? 'Simulado sem título' }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                                @error('simulado_id')
-                                    <span class="error-message">{{ $message }}</span>
-                                @enderror
-                            </div>
-                        </div>
-
                     </div>
                 </div>
             </div>
 
+            {{-- Coluna lateral — Prévia --}}
             <div class="form-col-side">
                 <div class="preview-card">
                     <div class="preview-card-header">
@@ -281,8 +259,14 @@
                             <h4 id="previewTitulo">Título da Sala</h4>
                             <span id="previewMateria" class="mini-subject">Matéria</span>
                             <div class="mini-meta">
-                                <span><i class="fas fa-users"></i> <span id="previewAlunos">0</span> alunos</span>
-                                <span><i class="fas fa-calendar"></i> <span id="previewData">Sem data</span></span>
+                                <span>
+                                    <i class="fas fa-users"></i>
+                                    <span id="previewAlunos">30</span> alunos
+                                </span>
+                                <span>
+                                    <i class="fas fa-calendar"></i>
+                                    <span id="previewData">Sem data</span>
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -294,10 +278,10 @@
                         Dicas
                     </div>
                     <ul class="tips-list">
-                        <li>Use um título claro e descritivo para facilitar a busca</li>
-                        <li>Defina a data/hora de início para que alunos se programem</li>
-                        <li>Adicione um link válido de videoconferência</li>
-                        <li>Você poderá adicionar materiais e simulados depois</li>
+                        <li>Use um título claro e descritivo para facilitar a busca pelos alunos.</li>
+                        <li>Defina data e hora de início para que os alunos se programem.</li>
+                        <li>Deixe o link externo vazio para usar a sala Jitsi automática.</li>
+                        <li>Você vinculará o conteúdo e simulado nos próximos passos.</li>
                     </ul>
                 </div>
             </div>
@@ -309,71 +293,105 @@
                 <i class="fas fa-times"></i> Cancelar
             </a>
             <button type="button" class="btn-form-next" id="nextToStep2">
-                Próximo: Material
+                Próximo: Conteúdo
                 <i class="fas fa-arrow-right"></i>
             </button>
         </div>
     </div>
 
+    {{-- ============================================================
+         STEP 2 — Conteúdo (opcional)
+         ============================================================ --}}
     <div class="form-step" id="step-2">
         <div class="form-card">
             <div class="form-card-header">
                 <i class="fas fa-folder-open"></i>
-                <h3>Material de Apoio <span class="optional-tag">Opcional</span></h3>
+                <h3>
+                    Conteúdo de Apoio
+                    <span class="optional-tag">Opcional</span>
+                </h3>
             </div>
             <div class="form-card-body">
 
-                <div class="material-toggle-row">
-                    <label class="toggle-switch">
-                        <input type="checkbox" id="addMaterial" name="add_material" value="1" {{ old('add_material') ? 'checked' : '' }}>
-                        <span class="toggle-slider"></span>
-                    </label>
-                    <span>Adicionar material a esta sala</span>
-                </div>
+                @if(count($conteudos))
+                    <p class="section-hint">
+                        <i class="fas fa-info-circle"></i>
+                        Selecione um conteúdo já cadastrado para vincular a esta sala.
+                        Para cadastrar um novo, acesse a área de <strong>Conteúdos</strong>.
+                    </p>
 
-                <div id="materialFields" class="hidden-fields {{ old('add_material') ? 'visible' : '' }}">
-                    <div class="form-group">
-                        <label class="form-label">Título do Material <span class="required">*</span></label>
-                        <input type="text" name="material_titulo" class="form-control" placeholder="Ex: Apostila — Capítulo 3" value="{{ old('material_titulo') }}">
+                    <div class="conteudo-grid" id="conteudoGrid">
+                        @foreach($conteudos as $conteudo)
+                        <label class="conteudo-card" for="conteudo_{{ $conteudo['idConteudo'] }}">
+                            <input
+                                type="radio"
+                                id="conteudo_{{ $conteudo['idConteudo'] }}"
+                                name="conteudo_id"
+                                value="{{ $conteudo['idConteudo'] }}"
+                                {{ old('conteudo_id') == $conteudo['idConteudo'] ? 'checked' : '' }}
+                                class="conteudo-radio"
+                            >
+                            <div class="conteudo-card-inner">
+                                <div class="conteudo-tipo-badge {{ $conteudo['tipo'] ?? 'other' }}">
+                                    @switch($conteudo['tipo'] ?? '')
+                                        @case('pdf')  <i class="fas fa-file-pdf"></i> PDF @break
+                                        @case('pptx') <i class="fas fa-file-powerpoint"></i> PPTX @break
+                                        @case('docx') <i class="fas fa-file-word"></i> DOCX @break
+                                        @case('mp4')  <i class="fas fa-file-video"></i> MP4 @break
+                                        @case('link') <i class="fas fa-link"></i> Link @break
+                                        @default       <i class="fas fa-file"></i> Arquivo
+                                    @endswitch
+                                </div>
+                                <div class="conteudo-info">
+                                    <strong>{{ $conteudo['titulo'] }}</strong>
+                                    @if(!empty($conteudo['descricao']))
+                                        <span>{{ Str::limit($conteudo['descricao'], 60) }}</span>
+                                    @endif
+                                </div>
+                                <div class="conteudo-check">
+                                    <i class="fas fa-check-circle"></i>
+                                </div>
+                            </div>
+                        </label>
+                        @endforeach
                     </div>
 
-                    <div class="form-group">
-                        <label class="form-label">Descrição</label>
-                        <textarea name="material_descricao" class="form-control" rows="3" placeholder="Descreva o material...">{{ old('material_descricao') }}</textarea>
-                    </div>
-
-                    <div class="form-row-two">
-                        <div class="form-group">
-                            <label class="form-label">Tipo <span class="required">*</span></label>
-                            <select name="material_type" id="mat_type" class="form-control filter-select">
-                                <option value="">Selecione o tipo</option>
-                                <option value="pdf" {{ old('material_type') === 'pdf' ? 'selected' : '' }}>PDF</option>
-                                <option value="slide" {{ old('material_type') === 'slide' ? 'selected' : '' }}>Slide</option>
-                                <option value="video" {{ old('material_type') === 'video' ? 'selected' : '' }}>Vídeo</option>
-                                <option value="document" {{ old('material_type') === 'document' ? 'selected' : '' }}>Documento</option>
-                                <option value="other" {{ old('material_type') === 'other' ? 'selected' : '' }}>Outro</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">URL do Material</label>
-                            <div class="input-with-icon">
-                                <i class="fas fa-link"></i>
-                                <input type="url" id="mat_file_url" name="material_file_url" class="form-control" placeholder="https://..." value="{{ old('material_file_url') }}">
+                    {{-- Opção de nenhum conteúdo --}}
+                    <label class="conteudo-card conteudo-none" for="conteudo_none">
+                        <input
+                            type="radio"
+                            id="conteudo_none"
+                            name="conteudo_id"
+                            value=""
+                            {{ old('conteudo_id', '') === '' ? 'checked' : '' }}
+                            class="conteudo-radio"
+                        >
+                        <div class="conteudo-card-inner">
+                            <div class="conteudo-tipo-badge none">
+                                <i class="fas fa-ban"></i>
+                            </div>
+                            <div class="conteudo-info">
+                                <strong>Sem conteúdo</strong>
+                                <span>Criar sala sem vincular conteúdo agora</span>
+                            </div>
+                            <div class="conteudo-check">
+                                <i class="fas fa-check-circle"></i>
                             </div>
                         </div>
-                    </div>
+                    </label>
 
-                    <div class="form-group">
-                        <label class="form-label">Arquivo</label>
-                        <div class="file-drop-zone" id="fileDropZone">
-                            <i class="fas fa-cloud-upload-alt"></i>
-                            <p>Arraste o arquivo aqui ou <label for="materialFile" class="file-link">clique para selecionar</label></p>
-                            <span class="file-hint">PDF, PPTX, DOCX, MP4 — Máx. 50MB</span>
-                            <input type="file" id="materialFile" name="material_file" class="file-input" accept=".pdf,.pptx,.ppt,.docx,.doc,.mp4,.avi">
-                        </div>
-                        <div id="filePreview" class="file-preview hidden"></div>
+                @else
+                    <div class="empty-state-inline">
+                        <i class="fas fa-folder-open"></i>
+                        <p>Você ainda não tem conteúdos cadastrados.</p>
+                        <a href="{{ route('professor.conteudo.create') }}" class="btn-form-next" target="_blank">
+                            <i class="fas fa-plus"></i> Cadastrar Conteúdo
+                        </a>
                     </div>
-                </div>
+                    {{-- Campo hidden para garantir que conteudo_id vai como null --}}
+                    <input type="hidden" name="conteudo_id" value="">
+                @endif
+
             </div>
         </div>
 
@@ -388,30 +406,159 @@
         </div>
     </div>
 
+    {{-- ============================================================
+         STEP 3 — Simulado (opcional)
+         ============================================================ --}}
     <div class="form-step" id="step-3">
         <div class="form-card">
             <div class="form-card-header">
                 <i class="fas fa-question-circle"></i>
-                <h3>Simulado <span class="optional-tag">Opcional</span></h3>
+                <h3>
+                    Simulado
+                    <span class="optional-tag">Opcional</span>
+                </h3>
             </div>
             <div class="form-card-body">
 
-                <div class="material-toggle-row">
-                    <label class="toggle-switch">
-                        <input type="checkbox" id="addSimulado" name="add_simulado" value="1" {{ old('add_simulado') || old('questoes') ? 'checked' : '' }}>
-                        <span class="toggle-slider"></span>
-                    </label>
-                    <span>Adicionar simulado a esta sala</span>
+                {{-- Tabs: vincular existente ou criar novo --}}
+                <div class="simulado-tabs">
+                    <button type="button" class="simulado-tab active" data-simulado-tab="existente">
+                        <i class="fas fa-link"></i>
+                        Vincular Simulado Existente
+                    </button>
+                    <button type="button" class="simulado-tab" data-simulado-tab="novo">
+                        <i class="fas fa-plus"></i>
+                        Criar Novo Simulado
+                    </button>
+                    <button type="button" class="simulado-tab" data-simulado-tab="nenhum">
+                        <i class="fas fa-ban"></i>
+                        Sem Simulado
+                    </button>
                 </div>
 
-                <div id="simuladoFields" class="hidden-fields {{ old('add_simulado') || old('questoes') ? 'visible' : '' }}">
-                    <div id="questoesContainer">
-                        {{-- Questão 1 é adicionada pelo JS --}}
+                {{-- TAB: Vincular existente --}}
+                <div class="simulado-tab-content active" id="simuladoTab-existente">
+                    @if(count($simulados))
+                        <div class="conteudo-grid">
+                            @foreach($simulados as $simulado)
+                            <label class="conteudo-card" for="simulado_{{ $simulado['idSimulado'] }}">
+                                <input
+                                    type="radio"
+                                    id="simulado_{{ $simulado['idSimulado'] }}"
+                                    name="simulado_id"
+                                    value="{{ $simulado['idSimulado'] }}"
+                                    {{ old('simulado_id') == $simulado['idSimulado'] ? 'checked' : '' }}
+                                    class="simulado-radio"
+                                >
+                                <div class="conteudo-card-inner">
+                                    <div class="conteudo-tipo-badge simulado">
+                                        <i class="fas fa-clipboard-list"></i>
+                                    </div>
+                                    <div class="conteudo-info">
+                                        <strong>{{ $simulado['titulo'] }}</strong>
+                                        @if(!empty($simulado['descricao']))
+                                            <span>{{ Str::limit($simulado['descricao'], 60) }}</span>
+                                        @endif
+                                        @if(!empty($simulado['questoes_count']))
+                                            <span class="badge-questoes">
+                                                {{ $simulado['questoes_count'] }} questões
+                                            </span>
+                                        @endif
+                                    </div>
+                                    <div class="conteudo-check">
+                                        <i class="fas fa-check-circle"></i>
+                                    </div>
+                                </div>
+                            </label>
+                            @endforeach
+                        </div>
+                    @else
+                        <div class="empty-state-inline">
+                            <i class="fas fa-clipboard-list"></i>
+                            <p>Nenhum simulado cadastrado ainda.</p>
+                        </div>
+                    @endif
+                </div>
+
+                {{-- TAB: Criar novo --}}
+                <div class="simulado-tab-content" id="simuladoTab-novo">
+                    <input type="hidden" name="simulado_id" value="" id="simuladoIdHidden">
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            Título do Simulado <span class="required">*</span>
+                        </label>
+                        <input
+                            type="text"
+                            name="simulado_titulo"
+                            class="form-control"
+                            placeholder="Ex: Simulado — Equações do 2º Grau"
+                            value="{{ old('simulado_titulo') }}"
+                        >
                     </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Descrição do Simulado</label>
+                        <textarea
+                            name="simulado_descricao"
+                            class="form-control"
+                            rows="2"
+                            placeholder="Descreva o objetivo do simulado..."
+                        >{{ old('simulado_descricao') }}</textarea>
+                    </div>
+
+                    <div id="questoesContainer">
+                        {{-- Questões adicionadas pelo JS --}}
+                    </div>
+
                     <button type="button" class="btn-add-questao" id="addQuestao">
                         <i class="fas fa-plus"></i>
                         Adicionar Questão
                     </button>
+                </div>
+
+                {{-- TAB: Sem simulado --}}
+                <div class="simulado-tab-content" id="simuladoTab-nenhum">
+                    <div class="empty-state-inline muted">
+                        <i class="fas fa-ban"></i>
+                        <p>Esta sala será criada sem simulado vinculado.<br>Você poderá adicionar um depois.</p>
+                    </div>
+                    <input type="hidden" name="simulado_id" value="">
+                </div>
+
+            </div>
+        </div>
+
+        {{-- Resumo antes de submeter --}}
+        <div class="form-card resumo-card" id="resumoFinal">
+            <div class="form-card-header">
+                <i class="fas fa-list-check"></i>
+                <h3>Resumo da Sala</h3>
+            </div>
+            <div class="form-card-body resumo-body">
+                <div class="resumo-item">
+                    <span class="resumo-label"><i class="fas fa-tag"></i> Título</span>
+                    <span class="resumo-value" id="resumoTitulo">—</span>
+                </div>
+                <div class="resumo-item">
+                    <span class="resumo-label"><i class="fas fa-book"></i> Matéria</span>
+                    <span class="resumo-value" id="resumoMateria">—</span>
+                </div>
+                <div class="resumo-item">
+                    <span class="resumo-label"><i class="fas fa-users"></i> Máx. Alunos</span>
+                    <span class="resumo-value" id="resumoAlunos">—</span>
+                </div>
+                <div class="resumo-item">
+                    <span class="resumo-label"><i class="fas fa-calendar"></i> Início</span>
+                    <span class="resumo-value" id="resumoInicio">—</span>
+                </div>
+                <div class="resumo-item">
+                    <span class="resumo-label"><i class="fas fa-folder"></i> Conteúdo</span>
+                    <span class="resumo-value" id="resumoConteudo">Sem conteúdo</span>
+                </div>
+                <div class="resumo-item">
+                    <span class="resumo-label"><i class="fas fa-clipboard-list"></i> Simulado</span>
+                    <span class="resumo-value" id="resumoSimulado">Sem simulado</span>
                 </div>
             </div>
         </div>
@@ -429,17 +576,25 @@
 
 </form>
 
+{{-- Template de questão (clonado pelo JS) --}}
 <template id="questaoTemplate">
     <div class="questao-block" data-index="__INDEX__">
         <div class="questao-header">
             <span class="questao-num">Questão <strong>__NUM__</strong></span>
-            <button type="button" class="btn-remove-questao" title="Remover">
+            <button type="button" class="btn-remove-questao" title="Remover questão">
                 <i class="fas fa-times"></i>
             </button>
         </div>
         <div class="form-group">
-            <label class="form-label">Enunciado da Questão <span class="required">*</span></label>
-            <textarea name="questoes[__INDEX__][enunciado]" class="form-control" rows="2" placeholder="Digite o enunciado..."></textarea>
+            <label class="form-label">
+                Enunciado <span class="required">*</span>
+            </label>
+            <textarea
+                name="questoes[__INDEX__][enunciado]"
+                class="form-control"
+                rows="2"
+                placeholder="Digite o enunciado da questão..."
+            ></textarea>
         </div>
         <div class="alternativas-grid">
             <div class="alternativa-item">
@@ -464,7 +619,9 @@
             </div>
         </div>
         <div class="form-group">
-            <label class="form-label">Alternativa Correta <span class="required">*</span></label>
+            <label class="form-label">
+                Alternativa Correta <span class="required">*</span>
+            </label>
             <select name="questoes[__INDEX__][questao_correta]" class="form-control filter-select">
                 <option value="1">A</option>
                 <option value="2">B</option>
@@ -480,4 +637,160 @@
 
 @section('scripts')
 <script src="{{ asset('js/sala-professor.js') }}"></script>
+<script>
+// ── Prévia do card ────────────────────────────────────────────────────────────
+const materiaSelect = document.getElementById('materia_id');
+const materiaNames  = {
+    @foreach($materias as $m)
+        "{{ $m['idMateria'] }}": "{{ $m['nomeMateria'] }}",
+    @endforeach
+};
+
+function updatePreview() {
+    const titulo  = document.getElementById('titulo').value || 'Título da Sala';
+    const matId   = materiaSelect.value;
+    const alunos  = document.getElementById('max_alunos').value || '30';
+    const inicio  = document.getElementById('data_hora_inicio').value;
+    const status  = document.getElementById('status').value;
+
+    document.getElementById('previewTitulo').textContent  = titulo;
+    document.getElementById('previewMateria').textContent = materiaNames[matId] || 'Matéria';
+    document.getElementById('previewAlunos').textContent  = alunos;
+    document.getElementById('previewData').textContent    = inicio
+        ? new Date(inicio).toLocaleDateString('pt-BR')
+        : 'Sem data';
+
+    const ribbon = document.getElementById('previewRibbon');
+    ribbon.className = `mini-ribbon ${status}`;
+    ribbon.innerHTML = status === 'active'
+        ? '<i class="fas fa-circle"></i> Ao Vivo'
+        : '<i class="fas fa-clock"></i> Agendada';
+}
+
+['titulo','materia_id','max_alunos','data_hora_inicio','status'].forEach(id => {
+    document.getElementById(id)?.addEventListener('input', updatePreview);
+    document.getElementById(id)?.addEventListener('change', updatePreview);
+});
+
+// Contador de caracteres do título
+document.getElementById('titulo').addEventListener('input', function () {
+    document.getElementById('tituloCount').textContent = this.value.length;
+});
+
+// ── Navegação entre steps ─────────────────────────────────────────────────────
+function goToStep(n) {
+    document.querySelectorAll('.form-step').forEach(s => s.classList.remove('active'));
+    document.getElementById(`step-${n}`).classList.add('active');
+
+    document.querySelectorAll('.step').forEach(s => {
+        const num = parseInt(s.dataset.step);
+        s.classList.toggle('active',    num === n);
+        s.classList.toggle('completed', num < n);
+    });
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+document.getElementById('nextToStep2')?.addEventListener('click', () => {
+    // Valida step 1 antes de avançar
+    const titulo    = document.getElementById('titulo');
+    const materiaId = document.getElementById('materia_id');
+    const maxAlunos = document.getElementById('max_alunos');
+
+    if (!titulo.value.trim() || !materiaId.value || !maxAlunos.value) {
+        titulo.reportValidity();
+        materiaId.reportValidity();
+        maxAlunos.reportValidity();
+        return;
+    }
+    goToStep(2);
+});
+
+document.getElementById('backToStep1')?.addEventListener('click', () => goToStep(1));
+document.getElementById('nextToStep3')?.addEventListener('click', () => {
+    updateResumo();
+    goToStep(3);
+});
+document.getElementById('backToStep2')?.addEventListener('click', () => goToStep(2));
+
+// ── Tabs do simulado ──────────────────────────────────────────────────────────
+document.querySelectorAll('.simulado-tab').forEach(tab => {
+    tab.addEventListener('click', function () {
+        document.querySelectorAll('.simulado-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.simulado-tab-content').forEach(c => c.classList.remove('active'));
+        this.classList.add('active');
+        document.getElementById(`simuladoTab-${this.dataset.simuladoTab}`).classList.add('active');
+
+        // Se mudou para "nenhum" ou "existente", limpa campos de novo simulado
+        if (this.dataset.simuladoTab !== 'novo') {
+            document.getElementById('questoesContainer').innerHTML = '';
+            questaoIndex = 0;
+        }
+    });
+});
+
+// ── Questões inline ───────────────────────────────────────────────────────────
+let questaoIndex = 0;
+const template   = document.getElementById('questaoTemplate');
+
+function addQuestao() {
+    questaoIndex++;
+    const html = template.innerHTML
+        .replaceAll('__INDEX__', questaoIndex)
+        .replaceAll('__NUM__', questaoIndex);
+    const wrapper = document.createElement('div');
+    wrapper.innerHTML = html;
+    const block = wrapper.firstElementChild;
+
+    block.querySelector('.btn-remove-questao').addEventListener('click', () => {
+        block.remove();
+        renumberQuestoes();
+    });
+
+    document.getElementById('questoesContainer').appendChild(block);
+}
+
+function renumberQuestoes() {
+    document.querySelectorAll('.questao-block').forEach((b, i) => {
+        b.querySelector('.questao-num strong').textContent = i + 1;
+    });
+}
+
+document.getElementById('addQuestao')?.addEventListener('click', addQuestao);
+
+// ── Resumo final ──────────────────────────────────────────────────────────────
+function updateResumo() {
+    const matId      = materiaSelect.value;
+    const inicio     = document.getElementById('data_hora_inicio').value;
+    const conteudoEl = document.querySelector('.conteudo-radio:checked');
+    const simuladoEl = document.querySelector('.simulado-radio:checked');
+
+    document.getElementById('resumoTitulo').textContent  =
+        document.getElementById('titulo').value || '—';
+    document.getElementById('resumoMateria').textContent =
+        materiaNames[matId] || '—';
+    document.getElementById('resumoAlunos').textContent  =
+        document.getElementById('max_alunos').value || '—';
+    document.getElementById('resumoInicio').textContent  =
+        inicio ? new Date(inicio).toLocaleString('pt-BR') : 'Sem data';
+
+    const conteudoLabel = conteudoEl
+        ? conteudoEl.closest('.conteudo-card').querySelector('strong')?.textContent
+        : null;
+    document.getElementById('resumoConteudo').textContent =
+        (conteudoLabel && conteudoLabel !== 'Sem conteúdo') ? conteudoLabel : 'Sem conteúdo';
+
+    const activeSimTab = document.querySelector('.simulado-tab.active')?.dataset.simuladoTab;
+    if (activeSimTab === 'existente' && simuladoEl) {
+        const simLabel = simuladoEl.closest('.conteudo-card').querySelector('strong')?.textContent;
+        document.getElementById('resumoSimulado').textContent = simLabel || 'Sem simulado';
+    } else if (activeSimTab === 'novo') {
+        const novoTitulo = document.querySelector('[name="simulado_titulo"]')?.value;
+        document.getElementById('resumoSimulado').textContent =
+            novoTitulo ? `Novo: ${novoTitulo}` : 'Novo simulado (sem título)';
+    } else {
+        document.getElementById('resumoSimulado').textContent = 'Sem simulado';
+    }
+}
+</script>
 @endsection

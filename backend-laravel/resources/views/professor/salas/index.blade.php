@@ -10,22 +10,6 @@
 @section('content')
 
 {{-- ============================================================
-     HEADER DA PÁGINA
-     ============================================================ --}}
-<div class="page-header">
-    <div class="page-header-left">
-        <h1 class="page-title">Salas de Aula</h1>
-        <p class="page-subtitle">Gerencie, agende e inicie suas aulas</p>
-    </div>
-    <div class="page-header-right">
-        <a href="{{ route('professor.salas.create') }}" class="btn-new-class">
-            <i class="fas fa-plus"></i>
-            Nova Sala
-        </a>
-    </div>
-</div>
-
-{{-- ============================================================
      TABS DE NAVEGAÇÃO
      ============================================================ --}}
 <div class="tabs-nav">
@@ -49,6 +33,12 @@
         Concluídas
         <span class="tab-count">{{ $salas->where('status', 'completed')->count() ?? 0 }}</span>
     </button>
+    <div class="page-header-right">
+        <a href="{{ route('professor.salas.create') }}" class="btn-new-class">
+            <i class="fas fa-plus"></i>
+            Nova Sala
+        </a>
+    </div>
 </div>
 
 {{-- ============================================================
@@ -307,4 +297,3 @@
 
 @section('scripts')
 <script src="{{ asset('js/sala-professor.js') }}"></script>
-@endsection
