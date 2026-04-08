@@ -9,7 +9,7 @@ public partial class SalaAula
     public DateTime? DataHoraInicio { get; set; }
     public DateTime? DataHoraFim { get; set; }
     public string Materia { get; set; } = null!;
-    public int? IdMaterial { get; set; }
+    public int? IdConteudo { get; set; }
     public int QtdAlunos { get; set; }
     public string Url { get; set; } = null!;
     public double Avaliacao { get; set; }
@@ -17,5 +17,5 @@ public partial class SalaAula
     public DateTime? CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
     public virtual ICollection<AlunoSala> AlunoSalas { get; set; } = new List<AlunoSala>();
-    public virtual Conteudo? Material { get; set; }
+    public virtual Conteudo? Conteudo { get; set; }
 }

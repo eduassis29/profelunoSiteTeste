@@ -17,4 +17,5 @@ public partial class Conteudo
     public DateTime? UpdatedAt { get; set; }
 
     public virtual Materia Materia { get; set; }
+    public virtual ICollection<SalaAula> SalaAula { get; set; }
 }

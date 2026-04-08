@@ -1,10 +1,11 @@
 using backend_dotnet.Data;
 using backend_dotnet.Models;
+using backend_dotnet.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace backend_dotnet.Services
 {
-    public class SalaAulaService 
+    public class SalaAulaService : ISalaAulaService
     {
         private readonly ProfelunoContext _context;
 
@@ -25,7 +26,7 @@ namespace backend_dotnet.Services
 
         public async Task<IEnumerable<SalaAula>> RetornaSalaAulaPorProfessor(int idProfessor)
         {
-            return await _context.SalaAulas.Where(x => x.IdProfessor == idProfessor).ToListAsync()
+            return await _context.SalaAulas.Where(x => x.IdProfessor == idProfessor).ToListAsync();
         }
     }
 }

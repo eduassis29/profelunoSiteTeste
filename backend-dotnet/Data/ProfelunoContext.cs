@@ -17,21 +17,13 @@ public partial class ProfelunoContext : DbContext
     }
 
     public virtual DbSet<AlunoSala> AlunoSalas { get; set; }
-
     public virtual DbSet<Conteudo> Conteudos { get; set; }
-
     public virtual DbSet<Migration> Migrations { get; set; }
-
     public virtual DbSet<Role> Roles { get; set; }
-
     public virtual DbSet<SalaAula> SalaAulas { get; set; }
-
     public virtual DbSet<Simulado> Simulados { get; set; }
-
     public virtual DbSet<User> Users { get; set; }
-
     public virtual DbSet<Cargo> Cargos { get; set; }
-
     public virtual DbSet<Materia> Materias { get; set; }
     public virtual DbSet<SimuladoQuestao> SimuladoQuestoes { get; set; }
 
@@ -42,7 +34,7 @@ public partial class ProfelunoContext : DbContext
             entity.ToTable("aluno_sala");
             entity.HasKey(e => e.IdAlunoSala);
             entity.Property(e => e.IdAlunoSala).HasColumnName("id");
-            entity.Property(e => e.AlunoId).HasColumnName("aluno_id");
+            entity.Property(e => e.IdAluno).HasColumnName("aluno_id");
             entity.Property(e => e.CreatedAt)
                 .HasColumnType("timestamp(0) without time zone")
                 .HasColumnName("created_at");
@@ -52,13 +44,13 @@ public partial class ProfelunoContext : DbContext
             entity.Property(e => e.LeftAt)
                 .HasColumnType("timestamp(0) without time zone")
                 .HasColumnName("left_at");
-            entity.Property(e => e.SalaAulaId).HasColumnName("sala_aula_id");
+            entity.Property(e => e.IdSalaAula).HasColumnName("sala_aula_id");
             entity.Property(e => e.UpdatedAt)
                 .HasColumnType("timestamp(0) without time zone")
                 .HasColumnName("updated_at");
 
             entity.HasOne(d => d.SalaAula).WithMany(p => p.AlunoSalas)
-                .HasForeignKey(d => d.SalaAulaId)
+                .HasForeignKey(d => d.IdSalaAula)
                 .HasConstraintName("aluno_sala_sala_aula_id_foreign");
         });
 
@@ -143,8 +135,8 @@ public partial class ProfelunoContext : DbContext
             entity.Property(e => e.Materia)
                 .HasMaxLength(255)
                 .HasColumnName("materia");
-            entity.Property(e => e.MaterialId).HasColumnName("material_id");
-            entity.Property(e => e.ProfessorId).HasColumnName("professor_id");
+            entity.Property(e => e.IdConteudo).HasColumnName("conteudo_id");
+            entity.Property(e => e.IdProfessor).HasColumnName("user_id");
             entity.Property(e => e.QtdAlunos).HasColumnName("qtd_alunos");
             entity.Property(e => e.Status)
                 .HasMaxLength(255)
@@ -157,8 +149,11 @@ public partial class ProfelunoContext : DbContext
                 .HasColumnType("timestamp(0) without time zone")
                 .HasColumnName("updated_at");
             entity.Property(e => e.Url)
-                .HasMaxLength(255)
                 .HasColumnName("url");
+
+            entity.HasOne(x => x.Conteudo)
+                .WithMany(x => x.SalaAula)
+                .HasForeignKey(x => x.IdConteudo);
         });
 
         modelBuilder.Entity<Simulado>(entity =>

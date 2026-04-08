@@ -2,9 +2,9 @@
 
 public partial class AlunoSala
 {
-    public long IdAlunoSala { get; set; }
-    public long AlunoId { get; set; }
-    public long SalaAulaId { get; set; }
+    public int IdAlunoSala { get; set; }
+    public int IdAluno { get; set; }
+    public int IdSalaAula { get; set; }
     public DateTime? JoinedAt { get; set; }
     public DateTime? LeftAt { get; set; }
     public DateTime? CreatedAt { get; set; }

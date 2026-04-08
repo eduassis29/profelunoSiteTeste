@@ -12,6 +12,7 @@ public static class DependencyInjectionConfig
         services.AddScoped<IMateriaService, MateriaService>();
         services.AddScoped<ISimuladoService, SimuladoService>();
         services.AddScoped<IConteudoService, ConteudoService>();
+        services.AddScoped<ISalaAulaService, SalaAulaService>();
 
         return services;
     }
