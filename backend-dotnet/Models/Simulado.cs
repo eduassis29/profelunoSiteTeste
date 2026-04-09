@@ -1,4 +1,6 @@
-﻿namespace backend_dotnet.Models;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace backend_dotnet.Models;
 
 public partial class Simulado
 {
@@ -10,6 +12,9 @@ public partial class Simulado
     public int IdUser { get; set; }
     public DateTime? CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
+
     public virtual Materia Materia { get; set; } = null!;
     public virtual ICollection<SimuladoQuestao> SimuladoQuestao { get; set; } = null!;
+    [NotMapped]
+    public virtual ICollection<SalaAula>? SalaAulas { get; set; }
 }

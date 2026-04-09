@@ -121,39 +121,46 @@ public partial class ProfelunoContext : DbContext
             entity.ToTable("sala_aula");
             entity.HasKey(e => e.IdSalaAula);
             entity.Property(e => e.IdSalaAula).HasColumnName("id");
+            entity.Property(e => e.Titulo)
+                .HasMaxLength(255)
+                .HasColumnName("titulo");
+            entity.Property(e => e.Descricao).HasColumnName("descricao");
+            entity.Property(e => e.IdProfessor).HasColumnName("user_id");
             entity.Property(e => e.Avaliacao).HasColumnName("avaliacao");
-            entity.Property(e => e.CreatedAt)
-                .HasColumnType("timestamp(0) without time zone")
-                .HasColumnName("created_at");
             entity.Property(e => e.DataHoraFim)
                 .HasColumnType("timestamp(0) without time zone")
                 .HasColumnName("data_hora_fim");
             entity.Property(e => e.DataHoraInicio)
                 .HasColumnType("timestamp(0) without time zone")
                 .HasColumnName("data_hora_inicio");
-            entity.Property(e => e.Descricao).HasColumnName("descricao");
-            entity.Property(e => e.Materia)
+            entity.Property(e => e.IdMateria)
                 .HasMaxLength(255)
-                .HasColumnName("materia");
+                .HasColumnName("materia_id");
             entity.Property(e => e.IdConteudo).HasColumnName("conteudo_id");
-            entity.Property(e => e.IdProfessor).HasColumnName("user_id");
-            entity.Property(e => e.QtdAlunos).HasColumnName("qtd_alunos");
+            entity.Property(e => e.IdSimulado).HasColumnName("simulado_id");
+            entity.Property(e => e.MaxAlunos).HasColumnName("max_alunos");
+            entity.Property(e => e.Url)
+                .HasColumnName("url");
+            entity.Property(e => e.NomeSala).HasColumnName("room_name");
+            entity.Property(e => e.Avaliacao).HasColumnName("avaliacao");
             entity.Property(e => e.Status)
                 .HasMaxLength(255)
                 .HasDefaultValueSql("'active'::character varying")
                 .HasColumnName("status");
-            entity.Property(e => e.Titulo)
-                .HasMaxLength(255)
-                .HasColumnName("titulo");
+            entity.Property(e => e.CreatedAt)
+                .HasColumnType("timestamp(0) without time zone")
+                .HasColumnName("created_at");
             entity.Property(e => e.UpdatedAt)
                 .HasColumnType("timestamp(0) without time zone")
                 .HasColumnName("updated_at");
-            entity.Property(e => e.Url)
-                .HasColumnName("url");
 
             entity.HasOne(x => x.Conteudo)
                 .WithMany(x => x.SalaAula)
                 .HasForeignKey(x => x.IdConteudo);
+
+            entity.HasOne(x => x.Simulados)
+                .WithMany(x => x.SalaAulas)
+                .HasForeignKey(x => x.IdSimulado);
         });
 
         modelBuilder.Entity<Simulado>(entity =>

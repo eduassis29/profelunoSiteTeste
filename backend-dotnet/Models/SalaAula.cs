@@ -8,14 +8,18 @@ public partial class SalaAula
     public int? IdProfessor { get; set; }
     public DateTime? DataHoraInicio { get; set; }
     public DateTime? DataHoraFim { get; set; }
-    public string Materia { get; set; } = null!;
+    public int IdMateria { get; set; }
     public int? IdConteudo { get; set; }
-    public int QtdAlunos { get; set; }
+    public int IdSimulado { get; set; }
+    public int MaxAlunos { get; set; }
     public string Url { get; set; } = null!;
+    public string? NomeSala { get; set; }
     public double Avaliacao { get; set; }
     public string Status { get; set; } = null!;
     public DateTime? CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
+
     public virtual ICollection<AlunoSala> AlunoSalas { get; set; } = new List<AlunoSala>();
     public virtual Conteudo? Conteudo { get; set; }
+    public virtual Simulado? Simulados { get; set; }
 }
