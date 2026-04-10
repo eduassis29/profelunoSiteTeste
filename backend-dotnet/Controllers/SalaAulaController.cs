@@ -1,3 +1,4 @@
+using backend_dotnet.Models.Requests;
 using backend_dotnet.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -35,6 +36,22 @@ namespace backend_dotnet.Controllers
             var response = await _salaAulaService.RetornaSalaAulaPorProfessor(idProfessor);
             if(response == null) return NotFound();
             return Ok(response);
+        }
+
+        [HttpPost("CadastrarSalaAula")]
+        public async Task<IActionResult> CadastrarSalaAula([FromBody]CadastrarSalaAulaRequest request)
+        {
+            var response = await _salaAulaService.CadastraSalaAula(request);
+            if(response == 0) return BadRequest();
+            return Ok(true);
+        }
+
+        [HttpPut("AtualizarSalaAula")]
+        public async Task<IActionResult> AtualizarSalaAula([FromBody]AtualizarSalaAulaRequest request)
+        {
+            var response = await _salaAulaService.AtualizaSalaAula(request);
+            if(response == false) return BadRequest();
+            return Ok(true);
         }
     }
 }
