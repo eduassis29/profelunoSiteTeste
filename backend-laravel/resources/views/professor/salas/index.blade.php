@@ -9,9 +9,7 @@
 
 @section('content')
 
-{{-- ============================================================
-     TABS DE NAVEGAÇÃO
-     ============================================================ --}}
+{{-- TABS DE NAVEGAÇÃO --}}
 <div class="tabs-nav">
     <button class="tab-btn active" data-tab="todas">
         <i class="fas fa-th-large"></i>
@@ -41,9 +39,7 @@
     </div>
 </div>
 
-{{-- ============================================================
-     AULA AO VIVO (aparece só se houver active)
-     ============================================================ --}}
+{{-- AULA AO VIVO (aparece só se houver active) --}}
 @php
     $salaAtiva = $salas->where('status', 'active')->first();
 @endphp
@@ -95,9 +91,7 @@
 </div>
 @endif
 
-{{-- ============================================================
-     SALAS AGENDADAS / PRONTAS PARA INICIAR
-     ============================================================ --}}
+{{-- SALAS AGENDADAS / PRONTAS PARA INICIAR --}}
 @php
     $salasAgendadas = $salas->where('status', 'pending');
 @endphp
@@ -156,9 +150,7 @@
 </div>
 @endif
 
-{{-- ============================================================
-     FILTRO + GRID DE TODAS AS SALAS
-     ============================================================ --}}
+{{-- FILTRO + GRID DE TODAS AS SALAS --}}
 <div class="section-block" id="tab-todas">
     <div class="filter-bar">
         <h2 class="section-title">

@@ -53,9 +53,6 @@ class SalaAulaProfessorController extends Controller
         }
     }
 
-    /**
-     * POST com body JSON — usado onde a API aceita body normal.
-     */
     private function apiPost(string $endpoint, array $data): ?array
     {
         try {
@@ -79,9 +76,6 @@ class SalaAulaProfessorController extends Controller
         }
     }
 
-    /**
-     * PUT com body JSON — usado onde a API aceita body normal.
-     */
     private function apiPut(string $endpoint, array $data): ?array
     {
         try {
@@ -127,51 +121,62 @@ class SalaAulaProfessorController extends Controller
         }
     }
 
-    // NORMALIZA UM ITEM DA API → objeto com Carbon nas datas
+    // NORMALIZA UM ITEM DA API → objeto pronto para as views
+    //
+    // Campos reais retornados pela API (confirmados via Swagger):
+    //   idSalaAula, titulo, descricao, idProfessor,
+    //   dataHoraInicio, dataHoraFim, idMateria,
+    //   idConteudo, idSimulado, maxAlunos,
+    //   url, nomeSala, avaliacao, status,
+    //   createdAt, updatedAt, alunoSalas, conteudo, simulados
     private function normalizeSala(array $item): object
     {
         $sala = (object) $item;
 
-        $sala->data_hora_inicio = !empty($sala->data_hora_inicio)
-            ? Carbon::parse($sala->data_hora_inicio)
+        // ID canônico para rotas
+        $sala->id = $sala->idSalaAula ?? null;
+
+        // Datas convertidas para Carbon
+        $sala->data_hora_inicio = !empty($sala->dataHoraInicio)
+            ? Carbon::parse($sala->dataHoraInicio)
             : null;
 
-        $sala->data_hora_fim = !empty($sala->data_hora_fim)
-            ? Carbon::parse($sala->data_hora_fim)
+        $sala->data_hora_fim = !empty($sala->dataHoraFim)
+            ? Carbon::parse($sala->dataHoraFim)
             : null;
 
-        // Garante campos que a view usa, mesmo que a API não retorne
-        $sala->avaliacao  = $sala->avaliacao  ?? null;
-        $sala->qtd_alunos = $sala->qtd_alunos ?? 0;
-        $sala->material   = $sala->material   ?? false;
-        $sala->status     = $sala->status     ?? 'pending';
-        $sala->materia    = $sala->materia    ?? '—';
-        $sala->descricao  = $sala->descricao  ?? null;
+        // Aliases usados pelos templates do index/buscar
+        $sala->qtd_alunos = $sala->maxAlunos ?? 0;
 
-        // Aliases para facilitar o acesso nas views
-        // A API retorna idSalaAula — expõe como id também
-        $sala->id         = $sala->idSalaAula ?? $sala->id ?? null;
+        // Nome da matéria não vem na resposta — preenchido externamente
+        // via mapa quando disponível; fallback '—'
+        $sala->materia   = $sala->materia   ?? '—';
+        $sala->avaliacao = $sala->avaliacao ?? null;
+        $sala->descricao = $sala->descricao ?? null;
+        $sala->status    = $sala->status    ?? 'pending';
+        $sala->material  = $sala->material  ?? false;
 
         return $sala;
     }
 
-    // INDEX — lista paginada de salas do professor
+    // INDEX — lista de salas do professor
     public function index(Request $request)
     {
         $page    = (int) $request->get('page', 1);
         $perPage = 10;
 
-        $data     = $this->apiGet("SalaAula/ListarSalasPorProfessor/" . Auth::id());
+        // Endpoint confirmado: RetornaSalaAulaPorProfessor/{idProfessor}
+        $data     = $this->apiGet("SalaAula/RetornaSalaAulaPorProfessor/" . Auth::id());
         $materias = $this->apiGet("Materia/ListarMaterias") ?? [];
+
+        // Mapa para resolver nomes: idMateria → nomeMateria
+        $materiasMap = collect($materias)->keyBy('idMateria');
 
         if (is_null($data)) {
             session()->flash('error', 'Não foi possível carregar as salas. Tente novamente.');
 
             $salas = new LengthAwarePaginator(
-                collect(),
-                0,
-                $perPage,
-                $page,
+                collect(), 0, $perPage, $page,
                 ['path' => $request->url()]
             );
 
@@ -185,18 +190,21 @@ class SalaAulaProfessorController extends Controller
             ]);
         }
 
-        // Suporte a dois formatos: { data: [...], total: N } ou [ ... ]
-        if (isset($data['data']) && is_array($data['data'])) {
-            $items = collect($data['data'])->map(fn($i) => $this->normalizeSala($i));
-            $total = $data['total'] ?? $items->count();
-        } else {
-            $items = collect($data)->map(fn($i) => $this->normalizeSala($i));
-            $total = $items->count();
-        }
+        // API retorna array direto (confirmado)
+        $items = collect($data)->map(function ($i) use ($materiasMap) {
+            $sala = $this->normalizeSala($i);
+
+            // Injeta nome da matéria
+            if (isset($sala->idMateria) && $materiasMap->has($sala->idMateria)) {
+                $sala->materia = $materiasMap->get($sala->idMateria)['nomeMateria'] ?? '—';
+            }
+
+            return $sala;
+        });
 
         $salas = new LengthAwarePaginator(
             $items->forPage($page, $perPage)->values(),
-            $total,
+            $items->count(),
             $perPage,
             $page,
             ['path' => $request->url()]
@@ -208,16 +216,12 @@ class SalaAulaProfessorController extends Controller
         $salaAtiva       = $salasAtivas->first();
 
         return view('professor.salas.index', compact(
-            'salas',
-            'salasAtivas',
-            'salasAgendadas',
-            'salasConcluidas',
-            'salaAtiva',
-            'materias',
+            'salas', 'salasAtivas', 'salasAgendadas',
+            'salasConcluidas', 'salaAtiva', 'materias',
         ));
     }
 
-    // CREATE — formulário de criação (steps)
+    // CREATE
     public function create()
     {
         $materias  = $this->apiGet('Materia/ListarMaterias') ?? [];
@@ -238,7 +242,7 @@ class SalaAulaProfessorController extends Controller
         return view('professor.salas.create', compact('materias', 'conteudos', 'simulados'));
     }
 
-    // STORE — salva nova sala via API
+    // STORE
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -252,7 +256,6 @@ class SalaAulaProfessorController extends Controller
             'conteudo_id'      => 'nullable|integer',
             'simulado_id'      => 'nullable|integer',
 
-            // Simulado inline (criação no momento — Step 3)
             'questoes'                   => 'nullable|array|min:1',
             'questoes.*.enunciado'       => 'required_with:questoes|string',
             'questoes.*.questao_a'       => 'required_with:questoes|string',
@@ -269,94 +272,78 @@ class SalaAulaProfessorController extends Controller
             'status.in'                    => 'Status inválido.',
         ]);
 
-        // Gera sala Jitsi automática
-        $roomName = Str::uuid()->toString();
-        $jitsiUrl = env('JITSI_BASE_URL', 'https://meet.jit.si') . '/' . $roomName;
-
-        // Se veio simulado inline, cria primeiro
         $simuladoId = $validated['simulado_id'] ?? null;
 
         if (!empty($validated['questoes']) && empty($simuladoId)) {
-            $simuladoPayload = [
-                'titulo'    => ($validated['titulo'] ?? 'Simulado') . ' — Simulado',
+            $simuladoCriado = $this->apiPost('Simulado/CadastrarSimulado', [
+                'titulo'    => $validated['titulo'] . ' — Simulado',
                 'idMateria' => $validated['materia_id'],
                 'situacao'  => true,
                 'questoes'  => array_values($validated['questoes']),
-            ];
-
-            $simuladoCriado = $this->apiPost('Simulado/CadastrarSimulado', $simuladoPayload);
+            ]);
 
             if (is_null($simuladoCriado)) {
-                return back()
-                    ->withInput()
+                return back()->withInput()
                     ->withErrors(['simulado' => 'Falha ao criar o simulado. Tente novamente.']);
             }
 
             $simuladoId = $simuladoCriado['idSimulado'] ?? null;
         }
 
-        // Monta payload conforme contrato da API CadastrarSalaAula
-        $payload = [
-            'titulo'          => $validated['titulo'],
-            'descricao'       => $validated['descricao'] ?? null,
-            'idProfessor'     => Auth::id(),
-            'maxAlunos'       => (int) $validated['max_alunos'],
-            'dataHoraInicio'  => $validated['data_hora_inicio'] ?? null,
-            'dataHoraFim'     => $validated['data_hora_fim']    ?? null,
-            'idMateria'       => (int) $validated['materia_id'],
-            'status'          => $validated['status'],
-            'idConteudo'      => $validated['conteudo_id'] ? (int) $validated['conteudo_id'] : null,
-            'idSimulado'      => $simuladoId               ? (int) $simuladoId               : null,
-            'url'             => $jitsiUrl,
-            'nomeSala'        => $roomName,
-        ];
-
-        $sala = $this->apiPost('SalaAula/CadastrarSalaAula', $payload);
+        $sala = $this->apiPost('SalaAula/CadastrarSalaAula', [
+            'titulo'         => $validated['titulo'],
+            'descricao'      => $validated['descricao'] ?? null,
+            'idProfessor'    => Auth::id(),
+            'maxAlunos'      => (int) $validated['max_alunos'],
+            'dataHoraInicio' => $validated['data_hora_inicio'] ?? null,
+            'dataHoraFim'    => $validated['data_hora_fim']    ?? null,
+            'idMateria'      => (int) $validated['materia_id'],
+            'status'         => $validated['status'],
+            'idConteudo'     => $validated['conteudo_id'] ? (int) $validated['conteudo_id'] : null,
+            'idSimulado'     => $simuladoId               ? (int) $simuladoId               : null,
+        ]);
 
         if (is_null($sala)) {
-            return back()
-                ->withInput()
+            return back()->withInput()
                 ->withErrors(['api' => 'Falha ao criar a sala. Tente novamente.']);
         }
 
-        // A API pode retornar o id como idSalaAula
         $salaId = $sala['idSalaAula'] ?? $sala['id'] ?? null;
 
-        if ($salaId) {
-            return redirect()
-                ->route('professor.salas.show', $salaId)
-                ->with('success', 'Sala criada com sucesso!');
-        }
-
-        return redirect()
-            ->route('professor.salas.index')
-            ->with('success', 'Sala criada com sucesso!');
+        return $salaId
+            ? redirect()->route('professor.salas.show', $salaId)->with('success', 'Sala criada com sucesso!')
+            : redirect()->route('professor.salas.index')->with('success', 'Sala criada com sucesso!');
     }
 
-    // SHOW — detalhes de uma sala
+    // SHOW
     public function show(int $id)
     {
         $data = $this->apiGet("SalaAula/RetornaSalaAulaPorId/{$id}");
 
         if (is_null($data)) {
-            return redirect()
-                ->route('professor.salas.index')
+            return redirect()->route('professor.salas.index')
                 ->with('error', 'Sala não encontrada.');
         }
 
         $sala = $this->normalizeSala($data);
 
+        // Resolve nome da matéria
+        if (isset($sala->idMateria)) {
+            $materias     = $this->apiGet('Materia/ListarMaterias') ?? [];
+            $materia      = collect($materias)->firstWhere('idMateria', $sala->idMateria);
+            $sala->materia = $materia['nomeMateria'] ?? '—';
+        }
+
         return view('professor.salas.show', compact('sala'));
     }
 
-    // EDIT — formulário de edição
+    // EDIT
     public function edit(int $id)
     {
         $data = $this->apiGet("SalaAula/RetornaSalaAulaPorId/{$id}");
 
         if (is_null($data)) {
-            return redirect()
-                ->route('professor.salas.index')
+            return redirect()->route('professor.salas.index')
                 ->with('error', 'Sala não encontrada.');
         }
 
@@ -375,7 +362,7 @@ class SalaAulaProfessorController extends Controller
         return view('professor.salas.edit', compact('sala', 'materias', 'conteudos', 'simulados'));
     }
 
-    // UPDATE — atualiza sala via API
+    // UPDATE
     public function update(Request $request, int $id)
     {
         $validated = $request->validate([
@@ -396,77 +383,83 @@ class SalaAulaProfessorController extends Controller
             'status.in'                    => 'Status inválido.',
         ]);
 
-        // Monta payload conforme contrato da API AtualizarSalaAula
-        $payload = [
-            'idSalaAula'      => $id,
-            'titulo'          => $validated['titulo'],
-            'descricao'       => $validated['descricao'] ?? null,
-            'idProfessor'     => Auth::id(),
-            'maxAlunos'       => (int) $validated['max_alunos'],
-            'dataHoraInicio'  => $validated['data_hora_inicio'] ?? null,
-            'dataHoraFim'     => $validated['data_hora_fim']    ?? null,
-            'idMateria'       => (int) $validated['materia_id'],
-            'status'          => $validated['status'],
-            'idConteudo'      => $validated['conteudo_id'] ? (int) $validated['conteudo_id'] : null,
-            'idSimulado'      => $validated['simulado_id'] ? (int) $validated['simulado_id'] : null,
-        ];
+        // Busca dados atuais para preservar url e nomeSala
+        $dadosAtuais = $this->apiGet("SalaAula/RetornaSalaAulaPorId/{$id}");
 
-        $resultado = $this->apiPut('SalaAula/AtualizarSalaAula', $payload);
+        if (is_null($dadosAtuais)) {
+            return back()->withInput()
+                ->withErrors(['api' => 'Não foi possível recuperar os dados da sala.']);
+        }
+
+        $resultado = $this->apiPut('SalaAula/AtualizarSalaAula', [
+            'idSalaAula'     => $id,
+            'titulo'         => $validated['titulo'],
+            'descricao'      => $validated['descricao'] ?? null,
+            'idProfessor'    => Auth::id(),
+            'maxAlunos'      => (int) $validated['max_alunos'],
+            'dataHoraInicio' => $validated['data_hora_inicio'] ?? null,
+            'dataHoraFim'    => $validated['data_hora_fim']    ?? null,
+            'idMateria'      => (int) $validated['materia_id'],
+            'status'         => $validated['status'],
+            'idConteudo'     => $validated['conteudo_id'] ? (int) $validated['conteudo_id'] : null,
+            'idSimulado'     => $validated['simulado_id'] ? (int) $validated['simulado_id'] : null,
+        ]);
 
         if (is_null($resultado)) {
-            return back()
-                ->withInput()
+            return back()->withInput()
                 ->withErrors(['api' => 'Falha ao atualizar a sala. Tente novamente.']);
         }
 
-        return redirect()
-            ->route('professor.salas.show', $id)
+        return redirect()->route('professor.salas.show', $id)
             ->with('success', 'Sala atualizada com sucesso!');
     }
 
-    // DESTROY — deleta sala via API
+    // DESTROY
     public function destroy(int $id)
     {
         $ok = $this->apiDelete("SalaAula/DeletarSalaAula/{$id}");
 
         if (!$ok) {
-            return redirect()
-                ->route('professor.salas.index')
+            return redirect()->route('professor.salas.index')
                 ->with('error', 'Não foi possível deletar a sala. Tente novamente.');
         }
 
-        return redirect()
-            ->route('professor.salas.index')
+        return redirect()->route('professor.salas.index')
             ->with('success', 'Sala deletada com sucesso!');
     }
 
-    // INICIAR — muda status para active
+    // INICIAR
     public function iniciar(int $id)
     {
-        // Primeiro busca os dados atuais da sala para reenviar tudo
-        $data = $this->apiGet("SalaAula/RetornaSalaAulaPorId/{$id}");
+        $dadosAtuais = $this->apiGet("SalaAula/RetornaSalaAulaPorId/{$id}");
 
-        if (is_null($data)) {
-            return redirect()
-                ->route('professor.salas.index')
+        if (is_null($dadosAtuais)) {
+            return redirect()->route('professor.salas.index')
                 ->with('error', 'Sala não encontrada.');
         }
 
-        $payload = array_merge($data, [
-            'idSalaAula' => $id,
-            'status'     => 'active',
+        $resultado = $this->apiPut('SalaAula/AtualizarSalaAula', [
+            'idSalaAula'     => $id,
+            'titulo'         => $dadosAtuais['titulo'],
+            'descricao'      => $dadosAtuais['descricao']      ?? null,
+            'idProfessor'    => $dadosAtuais['idProfessor'],
+            'maxAlunos'      => $dadosAtuais['maxAlunos'],
+            'dataHoraInicio' => $dadosAtuais['dataHoraInicio'] ?? null,
+            'dataHoraFim'    => $dadosAtuais['dataHoraFim']    ?? null,
+            'idMateria'      => $dadosAtuais['idMateria'],
+            'status'         => 'active',
+            'idConteudo'     => $dadosAtuais['idConteudo']     ?? null,
+            'idSimulado'     => $dadosAtuais['idSimulado']     ?? null,
+            'url'            => $dadosAtuais['url']            ?? null,
+            'nomeSala'       => $dadosAtuais['nomeSala']       ?? null,
         ]);
 
-        $resultado = $this->apiPut('SalaAula/AtualizarSalaAula', $payload);
-
         if (is_null($resultado)) {
-            return redirect()
-                ->route('professor.salas.index')
+            return redirect()->route('professor.salas.index')
                 ->with('error', 'Não foi possível iniciar a sala. Tente novamente.');
         }
 
-        return redirect()
-            ->route('professor.salas.show', $id)
+        return redirect()->route('professor.salas.show', $id)
             ->with('success', 'Aula iniciada!');
     }
 }
