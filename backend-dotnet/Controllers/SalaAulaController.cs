@@ -12,7 +12,7 @@ namespace backend_dotnet.Controllers
 
         public SalaAulaController(ISalaAulaService salaAulaInterface)
         {
-         _salaAulaService = salaAulaInterface;   
+            _salaAulaService = salaAulaInterface;
         }
 
         [HttpGet("RetornaTodasSalasAula")]
@@ -39,7 +39,7 @@ namespace backend_dotnet.Controllers
         }
 
         [HttpPost("CadastrarSalaAula")]
-        public async Task<IActionResult> CadastrarSalaAula([FromBody]CadastrarSalaAulaRequest request)
+        public async Task<IActionResult> CadastrarSalaAula([FromBody] CadastrarSalaAulaRequest request)
         {
             var response = await _salaAulaService.CadastraSalaAula(request);
             if(response == 0) return BadRequest();
@@ -47,9 +47,17 @@ namespace backend_dotnet.Controllers
         }
 
         [HttpPut("AtualizarSalaAula")]
-        public async Task<IActionResult> AtualizarSalaAula([FromBody]AtualizarSalaAulaRequest request)
+        public async Task<IActionResult> AtualizarSalaAula([FromBody] AtualizarSalaAulaRequest request)
         {
             var response = await _salaAulaService.AtualizaSalaAula(request);
+            if(response == false) return BadRequest();
+            return Ok(true);
+        }
+
+        [HttpDelete("DeletarSalaAula/{idSalaAula}")]
+        public async Task<IActionResult> DeletarSalaAula(int idSalaAula)
+        {
+            var response = await _salaAulaService.DeletarSalaAula(idSalaAula);
             if(response == false) return BadRequest();
             return Ok(true);
         }

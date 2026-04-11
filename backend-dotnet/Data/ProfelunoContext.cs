@@ -161,6 +161,10 @@ public partial class ProfelunoContext : DbContext
             entity.HasOne(x => x.Simulados)
                 .WithMany(x => x.SalaAulas)
                 .HasForeignKey(x => x.IdSimulado);
+
+            entity.HasOne(x => x.Materia)
+                .WithMany(x => x.SalaAulas)
+                .HasForeignKey(x => x.IdMateria);
         });
 
         modelBuilder.Entity<Simulado>(entity =>

@@ -22,4 +22,5 @@ public partial class SalaAula
     public virtual ICollection<AlunoSala> AlunoSalas { get; set; } = new List<AlunoSala>();
     public virtual Conteudo? Conteudo { get; set; }
     public virtual Simulado? Simulados { get; set; }
+    public virtual Materia Materia { get; set; } = null!;
 }

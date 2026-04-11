@@ -1,5 +1,6 @@
 ﻿using backend_dotnet.Services;
 using backend_dotnet.Services.Interfaces;
+using System.Runtime;
 
 namespace backend_dotnet.Configuration;
 
@@ -13,6 +14,7 @@ public static class DependencyInjectionConfig
         services.AddScoped<ISimuladoService, SimuladoService>();
         services.AddScoped<IConteudoService, ConteudoService>();
         services.AddScoped<ISalaAulaService, SalaAulaService>();
+        services.AddScoped<IJitsiService, JitsiService>();
 
         return services;
     }

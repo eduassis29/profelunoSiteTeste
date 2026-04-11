@@ -1,4 +1,5 @@
 using backend_dotnet.Configuration;
+using backend_dotnet.Models;
 
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
@@ -11,6 +12,8 @@ builder.Services.AddInfrastructure();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.Configure<JitsiOptions>(builder.Configuration.GetSection("Jitsi"));
 
 builder.WebHost.UseUrls("http://*:9000");
 

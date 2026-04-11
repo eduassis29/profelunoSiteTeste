@@ -12,7 +12,5 @@ namespace backend_dotnet.Models.Requests
         public string? Status { get; set; }
         public int? IdConteudo { get; set; }
         public int? IdSimulado { get; set; }
-        public string Url { get; set; } = null!;
-        public string? NomeSala { get; set; }
     }
 }

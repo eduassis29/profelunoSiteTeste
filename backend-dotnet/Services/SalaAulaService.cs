@@ -3,15 +3,21 @@ using backend_dotnet.Models;
 using backend_dotnet.Models.Requests;
 using backend_dotnet.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace backend_dotnet.Services
 {
     public class SalaAulaService : ISalaAulaService
     {
         private ProfelunoContext _context;
-        public SalaAulaService(ProfelunoContext context)
+        private IJitsiService _jitsiService;
+        private JitsiOptions _jitsiOptions;
+
+        public SalaAulaService(ProfelunoContext context, IJitsiService jitsiService, IOptions<JitsiOptions> jitsiOptions)
         {
             _context = context;
+            _jitsiService = jitsiService;
+            _jitsiOptions = jitsiOptions.Value;
         }
 
         public async Task<IEnumerable<SalaAula>> RetornaTodasSalasAula()
@@ -31,6 +37,8 @@ namespace backend_dotnet.Services
 
         public async Task<int> CadastraSalaAula(CadastrarSalaAulaRequest request)
         {
+            string nomeMateria = await _context.Materias.Where(x => x.IdMateria == request.IdMateria).Select(x => x.NomeMateria).FirstOrDefaultAsync();
+
             SalaAula newSalaAula = new SalaAula
             {
                 Titulo = request.Titulo,
@@ -43,14 +51,16 @@ namespace backend_dotnet.Services
                 Status = request.Status,
                 IdConteudo = request.IdConteudo == null || request.IdConteudo == 0 ? null : request.IdConteudo,
                 IdSimulado = request.IdSimulado == null || request.IdSimulado == 0 ? null : request.IdSimulado,
-                Url = request.Url,
-                NomeSala = request.NomeSala,
                 CreatedAt = DateTime.UtcNow
             };
 
             await _context.SalaAulas.AddAsync(newSalaAula);
             await _context.SaveChangesAsync();
-            
+
+            newSalaAula.NomeSala = _jitsiService.GerarLinkSala(newSalaAula.IdSalaAula.ToString(), nomeMateria);
+            newSalaAula.Url = $"{_jitsiOptions.UrlPadrao}{newSalaAula.NomeSala}";
+            await _context.SaveChangesAsync();
+
             return newSalaAula.IdSalaAula;
         }
 
@@ -74,6 +84,15 @@ namespace backend_dotnet.Services
 
             await _context.SaveChangesAsync();
 
+            return true;
+        }
+
+        public async Task<bool> DeletarSalaAula(int idSalaAula)
+        {
+            var salaAula = await _context.SalaAulas.FirstOrDefaultAsync(x => x.IdSalaAula == idSalaAula);
+            if(salaAula == null) return false;
+            _context.SalaAulas.Remove(salaAula);
+            await _context.SaveChangesAsync();
             return true;
         }
     }
