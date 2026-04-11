@@ -12,7 +12,7 @@ public partial class SalaAula
     public int? IdConteudo { get; set; }
     public int? IdSimulado { get; set; }
     public int MaxAlunos { get; set; }
-    public string Url { get; set; } = null!;
+    public string? Url { get; set; } = null!;
     public string? NomeSala { get; set; }
     public double Avaliacao { get; set; }
     public string? Status { get; set; }
