@@ -28,7 +28,7 @@ COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
 RUN apk add --no-cache nodejs npm
 
 # Copiar aplicação
-COPY backend-laravel .
+COPY . .
 
 # Instalar dependências PHP
 RUN composer install --no-dev --optimize-autoloader --no-interaction --no-progress
@@ -44,8 +44,8 @@ RUN mkdir -p storage/logs storage/framework/cache storage/framework/sessions sto
     && chown -R www-data:www-data storage bootstrap/cache
 
 # Copiar nginx config
-COPY nginx.conf /etc/nginx/conf.d/default.conf
-COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+COPY ../nginx.conf /etc/nginx/conf.d/default.conf
+COPY ../supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 # User e permissões
 RUN chown -R www-data:www-data /app
