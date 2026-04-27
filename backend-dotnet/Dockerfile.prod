@@ -1,0 +1,30 @@
+# Multi-stage Dockerfile para .NET em Produção
+
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+WORKDIR /src
+
+COPY backend-dotnet/Profeluno.csproj .
+RUN dotnet restore "Profeluno.csproj"
+
+COPY backend-dotnet/ .
+RUN dotnet build "Profeluno.csproj" -c Release -o /app/build
+
+FROM build AS publish
+RUN dotnet publish "Profeluno.csproj" -c Release -o /app/publish /p:UseAppHost=false
+
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
+WORKDIR /app
+
+# Variáveis de ambiente padrão
+ENV ASPNETCORE_ENVIRONMENT=Production \
+    ASPNETCORE_URLS=http://+:8080
+
+EXPOSE 8080
+
+COPY --from=publish /app/publish .
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=40s --retries=3 \
+  CMD curl -f http://localhost:8080/health || exit 1
+
+ENTRYPOINT ["dotnet", "Profeluno.dll"]
